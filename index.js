@@ -1,2 +1,7 @@
-export { ApiService } from './api-services/api.service'
-export { FoundationsApiService } from './api-services/foundations-api.service'
+import { ApiService } from './api-services/api.service'
+import { FoundationsApiService } from './api-services/foundations-api.service'
+
+export {
+    ApiService,
+    FoundationsApiService
+}
