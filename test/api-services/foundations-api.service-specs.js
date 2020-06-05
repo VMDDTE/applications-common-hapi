@@ -6,7 +6,7 @@
 
 import chai from 'chai'
 import sinon from 'sinon'
-import FoundationsApiService from '../../api-services/foundations-api.service'
+import { FoundationsApiService } from '../../api-services/foundations-api.service'
 import { checkForCorrelationIdHeader } from '../helpers'
 import nock from 'nock'
 

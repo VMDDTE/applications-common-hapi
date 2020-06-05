@@ -1,7 +1,7 @@
-import ApiService from './api.service'
+import { ApiService } from './api.service'
 import HttpHeaders from '../enums/http-headers.enum'
 
-export default class FoundationsApiService extends ApiService {
+export class FoundationsApiService extends ApiService {
     /**
      * Calls a GET request to an API.
      *

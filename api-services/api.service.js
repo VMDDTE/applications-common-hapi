@@ -1,7 +1,7 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
 
-export default class ApiService {
+export class ApiService {
     constructor (logger) {
         if (!logger) {
             throw new Error('ApiService required a logger')

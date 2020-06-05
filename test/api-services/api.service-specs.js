@@ -8,7 +8,7 @@ import chai from 'chai'
 import nock from 'nock'
 import sinon from 'sinon'
 import { expectThrowsAsync } from '../helpers'
-import ApiService from '../../api-services/api.service'
+import { ApiService } from '../../api-services/api.service'
 
 const expect = chai.expect
 
