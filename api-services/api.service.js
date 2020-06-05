@@ -1,18 +1,14 @@
-// Initially designed to be a generic ApiService to handle api calls in a standard way
+// Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
+import axios from 'axios'
 
 export class ApiService {
-    constructor (httpClient, logger) {
-        // presently the httpClient is based around axois, could make sense to enforce/mock axois
-        if (!httpClient) {
-            throw new Error('ApiService requires a http client')
-        }
-
+    constructor (logger) {
         if (!logger) {
             throw new Error('ApiService required a logger')
         }
 
         this.baseHeaders = { 'Content-Type': 'application/json' }
-        this.httpClient = httpClient
+        this.httpClient = axios
         this.logger = logger
     }
 
@@ -114,6 +110,10 @@ export class ApiService {
 
     logApiServiceException (httpMethod, url, exception) {
         // What case should this be?
-        this.logger.error({ 'ApiServiceUrl': `[${httpMethod.toUpperCase()}] ${url}`, 'Exception': exception })
+        this.logger.error({
+            'ErrorStatus': exception.response.status,
+            'ApiServiceUrl': `[${httpMethod.toUpperCase()}] ${url}`,
+            'Exception': exception
+        })
     }
 }
