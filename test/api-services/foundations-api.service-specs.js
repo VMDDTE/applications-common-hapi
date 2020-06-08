@@ -19,7 +19,7 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService({})
 
-            const response = await foundationsApiService.get('http://test.foundationsapiservice.com/api/1', '12345')
+            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1', originatingRequestId: '12345' })
 
             checkForCorrelationIdHeader(response, '12345')
 
@@ -42,7 +42,7 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
-            const response = await foundationsApiService.get('http://test.foundationsapiservice.com/api/1')
+            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1' })
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(400)
@@ -73,7 +73,7 @@ describe('FoundationsApi.Service', function () {
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
             // Should log error, but not rethrow as the base does
-            const response = await foundationsApiService.get('http://test.foundationsapiservice.com/api/1')
+            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1' })
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(500)
@@ -101,7 +101,7 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService({})
 
-            const data = await foundationsApiService.get('http://test.foundationsapiservice.com/api/1', '12345', null, true)
+            const data = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1', originatingRequestId: '12345' }, true)
 
             expect(data).not.to.have.property('status')
 
@@ -122,7 +122,7 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
-            const response = await foundationsApiService.get('http://test.foundationsapiservice.com/api/1', null, null, true)
+            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1' }, true)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(400)
@@ -150,7 +150,7 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService({})
 
-            const response = await foundationsApiService.get('http://test.foundationsapiservice.com/health/ping', '12345')
+            const response = await foundationsApiService.healthPing('http://test.foundationsapiservice.com', '12345')
 
             checkForCorrelationIdHeader(response, '12345')
 
@@ -173,7 +173,7 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
-            const response = await foundationsApiService.get('http://test.foundationsapiservice.com/health/ping')
+            const response = await foundationsApiService.healthPing('http://test.foundationsapiservice.com')
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(400)
@@ -204,7 +204,7 @@ describe('FoundationsApi.Service', function () {
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
             // Should log error, but not rethrow as the base does
-            const response = await foundationsApiService.get('http://test.foundationsapiservice.com/health/ping')
+            const response = await foundationsApiService.healthPing('http://test.foundationsapiservice.com')
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(500)

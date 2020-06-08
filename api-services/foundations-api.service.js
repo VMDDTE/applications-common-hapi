@@ -10,9 +10,9 @@ export class FoundationsApiService extends ApiService {
      * @param {Provide extra headers if needed} extraHeaders
      * @param {Indicate if whole response should be returned} returnDataOnly
      */
-    async get (url, originatingRequestId, extraHeaders, returnDataOnly = false) {
-        const headers = this.addCorrelationIdHeader(extraHeaders, originatingRequestId)
-        return await super.get(url, headers).then(response => this.returnDataOnlyIfSuccessful(response, returnDataOnly))
+    async get (foundationApiRequestConfiguration, returnDataOnly = false) {
+        const headers = this.addCorrelationIdHeader(foundationApiRequestConfiguration)
+        return await super.get(foundationApiRequestConfiguration.url, headers).then(response => this.returnDataOnlyIfSuccessful(response, returnDataOnly))
     }
 
     returnDataOnlyIfSuccessful (response, returnDataOnly) {
@@ -35,24 +35,38 @@ export class FoundationsApiService extends ApiService {
     async healthPing (baseServiceUrl, originatingRequestId) {
         const url = `${baseServiceUrl}/health/ping`
         // We now call the foundations-api get method
-        return await this.get(url, originatingRequestId)
+        return await this.get(this.buildFoundationApiRequestConfiguration(url, originatingRequestId))
+    }
+
+    buildFoundationApiRequestConfiguration (url, originatingRequestId, extraHeaders) {
+        const requestConfiguration = {
+            url
+        }
+        // Only add properties if valuesa are present
+        if (originatingRequestId) {
+            requestConfiguration.originatingRequestId = originatingRequestId
+        }
+        if (extraHeaders) {
+            requestConfiguration.extraHeaders = extraHeaders
+        }
+        return requestConfiguration
+    }
+
+    addCorrelationIdHeader (foundationApiRequestConfiguration) {
+        // Until such time that everything passes a correlation id and we can enforce, only add if we have it otherwise error are seen
+        if (!foundationApiRequestConfiguration.originatingRequestId) {
+            return foundationApiRequestConfiguration.extraHeaders
+        }
+
+        return {
+            ...foundationApiRequestConfiguration.extraHeaders,
+            [HttpHeaders.CORRELATION_ID]: foundationApiRequestConfiguration.originatingRequestId
+        }
     }
 
     processException (httpMethod, url, exception) {
         this.logApiServiceException(httpMethod, url, exception)
         // The original api service created in Licensing, simply consumed the error after logging
         return exception.response
-    }
-
-    addCorrelationIdHeader (headers, correlationId) {
-        // Until such time that everything passes a correlation id and we can enforce, only add if we have it otherwise error are seen
-        if (!correlationId) {
-            return headers
-        }
-
-        return {
-            ...headers,
-            [HttpHeaders.CORRELATION_ID]: correlationId
-        }
     }
 }
