@@ -42,7 +42,7 @@ export class FoundationsApiService extends ApiService {
         const requestConfiguration = {
             url
         }
-        // Only add properties if valuesa are present
+        // Only add properties if values are present
         if (originatingRequestId) {
             requestConfiguration.originatingRequestId = originatingRequestId
         }
