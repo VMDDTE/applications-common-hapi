@@ -8,10 +8,23 @@ export class FoundationsApiService extends ApiService {
      * @param {Provide the resource URL} url
      * @param {Provide originating Request Id if needed for use as correlation id} originatingRequestId
      * @param {Provide extra headers if needed} extraHeaders
+     * @param {Indicate if whole response should be returned} returnDataOnly
      */
-    async get (url, originatingRequestId, extraHeaders) {
+    async get (url, originatingRequestId, extraHeaders, returnDataOnly = false) {
         const headers = this.addCorrelationIdHeader(extraHeaders, originatingRequestId)
-        return await super.get(url, headers)
+        return await super.get(url, headers).then(response => this.returnDataOnlyIfSuccessful(response, returnDataOnly))
+    }
+
+    returnDataOnlyIfSuccessful (response, returnDataOnly) {
+        // The way the previous implementation worked was to only return a response if successful, however we now want to return response if error is seen
+        // Originally licensing get requests only expected data to be returned if successful...
+        if (returnDataOnly) {
+            if (response.status >= 200 && response.status < 300) {
+                return response.data
+            }
+        }
+
+        return response
     }
 
     /**
@@ -20,7 +33,7 @@ export class FoundationsApiService extends ApiService {
      * @param {Provide the base service URL} url
      */
     async healthPing (baseServiceUrl, originatingRequestId) {
-        const url = `${baseServiceUrl}/health/Ping`
+        const url = `${baseServiceUrl}/health/ping`
         // We now call the foundations-api get method
         return await this.get(url, originatingRequestId)
     }

@@ -8,7 +8,7 @@ export class ApiService {
         }
 
         this.baseHeaders = { 'Content-Type': 'application/json' }
-        this.httpClient = axios
+        this.axiosClient = axios
         this.logger = logger
     }
 
@@ -19,15 +19,8 @@ export class ApiService {
      * @param {Provide extra headers if needed} extraHeaders
      */
     async get (url, extraHeaders) {
-        const method = 'GET'
-        return await this.httpClient({
-            headers: {
-                ...this.baseHeaders,
-                ...extraHeaders
-            },
-            method,
-            url: url }
-        ).catch(exception => this.processException(method, url, exception))
+        const requestConfig = this.buildAxiosRequestConfig('GET', url, extraHeaders)
+        return await this.actionRequest(requestConfig)
     }
 
     /**
@@ -40,17 +33,7 @@ export class ApiService {
      * @param {Provide maxBodyLength if needed} maxBodyLength
      */
     async post (url, data, extraHeaders, maxContentLength, maxBodyLength) {
-        const method = 'POST'
-
-        let requestConfig = {
-            headers: {
-                ...this.baseHeaders,
-                ...extraHeaders
-            },
-            data,
-            method,
-            url
-        }
+        const requestConfig = this.buildAxiosRequestConfig('POST', url, extraHeaders, data)
 
         if (maxContentLength) {
             requestConfig.maxContentLength = maxContentLength
@@ -59,7 +42,7 @@ export class ApiService {
             requestConfig.maxBodyLength = maxBodyLength
         }
 
-        return await this.httpClient(requestConfig).catch(exception => this.processException(method, url, exception))
+        return await this.actionRequest(requestConfig)
     }
 
     /**
@@ -70,16 +53,8 @@ export class ApiService {
      * @param {Provide extra headers if needed} extraHeaders
      */
     async put (url, data, extraHeaders) {
-        const method = 'PUT'
-        return await this.httpClient({
-            headers: {
-                ...this.baseHeaders,
-                ...extraHeaders
-            },
-            data,
-            method,
-            url: url
-        }).catch(exception => this.processException(method, url, exception))
+        const requestConfig = this.buildAxiosRequestConfig('PUT', url, extraHeaders, data)
+        return await this.actionRequest(requestConfig)
     }
 
     /**
@@ -90,16 +65,27 @@ export class ApiService {
      * @param {Provide extra headers if needed} extraHeaders
      */
     async patch (url, data, extraHeaders) {
-        const method = 'PATCH'
-        return await this.httpClient({
+        const requestConfig = this.buildAxiosRequestConfig('PATCH', url, extraHeaders, data)
+        return await this.actionRequest(requestConfig)
+    }
+
+    buildAxiosRequestConfig (method, url, extraHeaders, data = null) {
+        const requestConfig = {
+            method,
+            url,
             headers: {
                 ...this.baseHeaders,
                 ...extraHeaders
-            },
-            data,
-            method,
-            url
-        }).catch(exception => this.processException(method, url, exception))
+            }
+        }
+        if (data) {
+            requestConfig.data = data
+        }
+        return requestConfig
+    }
+
+    async actionRequest (axiosRequestConfig) {
+        return await this.axiosClient(axiosRequestConfig).catch(exception => this.processException(axiosRequestConfig.method, axiosRequestConfig.url, exception))
     }
 
     processException (httpMethod, url, exception) {

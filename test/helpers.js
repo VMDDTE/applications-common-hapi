@@ -1,5 +1,3 @@
-/* eslint-disable jest/valid-expect */
-
 import chai from 'chai'
 const expect = chai.expect
 

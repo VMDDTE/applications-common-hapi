@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-expressions */
-/* eslint-disable jest/valid-expect */
 /* eslint-disable no-new */
-/* eslint-disable jest/no-disabled-tests */
-/* eslint-disable jest/expect-expect */
 
+import { describe, it } from 'mocha'
 import chai from 'chai'
 import nock from 'nock'
 import sinon from 'sinon'
@@ -94,16 +92,3 @@ describe('Api.Service', function () {
         })
     })
 })
-
-// const expectThrowsAsync = async (method, errorMessage) => {
-//     let error = null
-//     try {
-//         await method()
-//     } catch (err) {
-//         error = err
-//     }
-//     expect(error).to.be.an('Error')
-//     if (errorMessage) {
-//         expect(error.message).to.equal(errorMessage)
-//     }
-// }
