@@ -90,7 +90,7 @@ export class ApiService {
 
     processException (httpMethod, url, exception) {
         this.logApiServiceException(httpMethod, url, exception)
-        // Because we are throwing another exception here (correct for generic api!?), we will need to use catch everywhere it used
+        // Because we are throwing another exception here (correct for generic api!?), we will need to use catch everywhere its used
         throw exception
     }
 

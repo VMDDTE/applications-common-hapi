@@ -16,8 +16,8 @@ export class FoundationsApiService extends ApiService {
     }
 
     returnDataOnlyIfSuccessful (response, returnDataOnly) {
-        // The way the previous implementation worked was to only return a response if successful, however we now want to return response if error is seen
-        // Originally licensing get requests only expected data to be returned if successful...
+        // This shared library 'api' service was based on the licensing version, in which the get (and only get) was successful then the response data was extracted/returned
+        // Due to the generic nature of this shared library I have now made it optional if flag is passed, otherwise full response is returned
         if (returnDataOnly) {
             if (response.status >= 200 && response.status < 300) {
                 return response.data
@@ -66,7 +66,7 @@ export class FoundationsApiService extends ApiService {
 
     processException (httpMethod, url, exception) {
         this.logApiServiceException(httpMethod, url, exception)
-        // The original api service created in Licensing, simply consumed the error after logging
+        // The original api service created in Licensing, simply consumed the error after logging, however returning the response will be more useful
         return exception.response
     }
 }
