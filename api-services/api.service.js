@@ -7,7 +7,6 @@ export class ApiService {
             throw new Error('ApiService required a logger')
         }
 
-        this.baseHeaders = { 'Content-Type': 'application/json' }
         this.axiosClient = axios
         this.logger = logger
     }
@@ -18,9 +17,11 @@ export class ApiService {
      * @param {Provide the resource URL} url
      * @param {Provide extra headers if needed} extraHeaders
      */
-    async get (url, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestConfig('GET', url, extraHeaders)
-        return await this.actionRequest(requestConfig)
+    async get (requestConfig, responseOptions) {
+        requestConfig.method = 'GET'
+        // this.validateRequestConfig(requestConfig)
+        // Should probably verify various required things are set such as method and content type
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
     /**
@@ -33,7 +34,7 @@ export class ApiService {
      * @param {Provide maxBodyLength if needed} maxBodyLength
      */
     async post (url, data, extraHeaders, maxContentLength, maxBodyLength) {
-        const requestConfig = this.buildAxiosRequestConfig('POST', url, extraHeaders, data)
+        const requestConfig = this.buildAxiosRequestOptions('POST', url, extraHeaders, data)
 
         if (maxContentLength) {
             requestConfig.maxContentLength = maxContentLength
@@ -53,7 +54,7 @@ export class ApiService {
      * @param {Provide extra headers if needed} extraHeaders
      */
     async put (url, data, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestConfig('PUT', url, extraHeaders, data)
+        const requestConfig = this.buildAxiosRequestOptions('PUT', url, extraHeaders, data)
         return await this.actionRequest(requestConfig)
     }
 
@@ -65,18 +66,14 @@ export class ApiService {
      * @param {Provide extra headers if needed} extraHeaders
      */
     async patch (url, data, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestConfig('PATCH', url, extraHeaders, data)
+        const requestConfig = this.buildAxiosRequestOptions('PATCH', url, extraHeaders, data)
         return await this.actionRequest(requestConfig)
     }
 
-    buildAxiosRequestConfig (method, url, extraHeaders, data = null) {
-        const requestConfig = {
-            method,
-            url,
-            headers: {
-                ...this.baseHeaders,
-                ...extraHeaders
-            }
+    buildApiRequestConfig (url, headers, data) {
+        const requestConfig = { url }
+        if (headers) {
+            requestConfig.headers = headers
         }
         if (data) {
             requestConfig.data = data
@@ -84,12 +81,31 @@ export class ApiService {
         return requestConfig
     }
 
-    async actionRequest (axiosRequestConfig) {
-        return await this.axiosClient(axiosRequestConfig).catch(exception => this.processException(axiosRequestConfig.method, axiosRequestConfig.url, exception))
+    validateRequestConfig (requestConfig) {
+        if (!requestConfig) {
+            throw new Error('Request Config required')
+        }
+        if (!requestConfig.method) {
+            throw new Error('Request Config requires a http method')
+        }
+        if (!requestConfig.headers['Content-Type']) {
+            throw new Error('Request Config requires a content type')
+        }
     }
 
-    processException (httpMethod, url, exception) {
-        this.logApiServiceException(httpMethod, url, exception)
+    async actionRequest (requestConfig, responseOptions) {
+        return await this.axiosClient(requestConfig)
+            .then(response => this.processResponse(response, responseOptions))
+            .catch(exception => this.processException(exception, requestConfig, responseOptions))
+    }
+
+    processResponse (response, _responseOptions) {
+        // The default is sinmply to return the response, but this way allows us to override this behaviour
+        return response
+    }
+
+    processException (exception, requestConfig, _responseOptions) {
+        this.logApiServiceException(requestConfig.method, requestConfig.url, exception)
         // Because we are throwing another exception here (correct for generic api!?), we will need to use catch everywhere its used
         throw exception
     }

@@ -19,7 +19,8 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService({})
 
-            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1', originatingRequestId: '12345' })
+            const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
+            const response = await foundationsApiService.get(requestConfiguration)
 
             checkForCorrelationIdHeader(response, '12345')
 
@@ -42,7 +43,8 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
-            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1' })
+            const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
+            const response = await foundationsApiService.get(requestConfiguration)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(400)
@@ -73,7 +75,8 @@ describe('FoundationsApi.Service', function () {
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
             // Should log error, but not rethrow as the base does
-            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1' })
+            const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
+            const response = await foundationsApiService.get(requestConfiguration)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(500)
@@ -94,14 +97,16 @@ describe('FoundationsApi.Service', function () {
     })
 
     describe('#get returnDataOnly set to true', function () {
-        it('should return correct data, no reponse information', async function () {
+        it('should return correct data, no response information', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/api/1')
                 .reply(200, { 'test': 'pass' })
 
             const foundationsApiService = new FoundationsApiService({})
 
-            const data = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1', originatingRequestId: '12345' }, true)
+            const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
+            const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(true)
+            const data = await foundationsApiService.get(requestConfiguration, responseOptions)
 
             expect(data).not.to.have.property('status')
 
@@ -121,8 +126,8 @@ describe('FoundationsApi.Service', function () {
             }
 
             const foundationsApiService = new FoundationsApiService(mockedLogger)
-
-            const response = await foundationsApiService.get({ url: 'http://test.foundationsapiservice.com/api/1' }, true)
+            const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, true)
+            const response = await foundationsApiService.get(requestConfiguration)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(400)

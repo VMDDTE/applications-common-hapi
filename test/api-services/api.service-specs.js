@@ -28,8 +28,8 @@ describe('Api.Service', function () {
                 .reply(200, { 'test': 'pass' })
 
             const apiService = new ApiService({})
-
-            const response = await apiService.get('http://test.apiservice.com/api/1')
+            const requestConfiguration = apiService.buildApiRequestConfig('http://test.apiservice.com/api/1')
+            const response = await apiService.get(requestConfiguration)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(200)
@@ -49,8 +49,8 @@ describe('Api.Service', function () {
             }
 
             const apiService = new ApiService(mockedLogger)
-
-            await expectThrowsAsync(() => apiService.get('http://test.apiservice.com/api/1'))
+            const requestConfiguration = apiService.buildApiRequestConfig('http://test.apiservice.com/api/1')
+            await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
@@ -75,8 +75,8 @@ describe('Api.Service', function () {
             }
 
             const apiService = new ApiService(mockedLogger)
-
-            await expectThrowsAsync(() => apiService.get('http://test.apiservice.com/api/1'))
+            const requestConfiguration = apiService.buildApiRequestConfig('http://test.apiservice.com/api/1')
+            await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
