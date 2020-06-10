@@ -58,7 +58,10 @@ export class FoundationsApiService extends ApiService {
     }
 
     buildFoundationsApiProtectiveMonitoring (monitorSuccess, monitorException) {
-        r
+        return {
+            monitorSuccess,
+            monitorException
+        }
     }
 
     // Successful response processing
@@ -108,7 +111,7 @@ export class FoundationsApiService extends ApiService {
             this.protectivelyMonitorSuccessfulEvent(foundationApiRequestOptions, response)
         }
 
-        if (protectiveMonitoring.monitorSuccess) {
+        if (protectiveMonitoring.monitorException) {
             this.protectivelyMonitorExceptionEvent(foundationApiRequestOptions, exception)
         }
     }
