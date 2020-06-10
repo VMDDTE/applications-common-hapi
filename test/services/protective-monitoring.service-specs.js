@@ -38,7 +38,7 @@ describe('ProtectiveMonitoring.Service', function () {
         })
     })
 
-    describe('#monitorEvent', function () {
+    describe('#monitorEventInformation', function () {
         it('should log info message with correct details', async function () {
             const mockedLogger = { info: sinon.spy(), error: sinon.spy() }
             let mockedLog4js = {
@@ -69,7 +69,9 @@ describe('ProtectiveMonitoring.Service', function () {
             expect(loggedInfoMessage).to.have.property('auditDescription')
             expect(loggedInfoMessage.auditDescription).to.equal(auditDescription)
         })
+    })
 
+    describe('#monitorEventError', function () {
         it('should log error message with correct details', async function () {
             const mockedLogger = { info: sinon.spy(), error: sinon.spy() }
             let mockedLog4js = {

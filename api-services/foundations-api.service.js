@@ -57,11 +57,8 @@ export class FoundationsApiService extends ApiService {
         return responseOptions
     }
 
-    buildFoundationApiProtectiveMonitoring (monitorSuccess, monitorException) {
-        return {
-            monitorSuccess,
-            monitorException
-        }
+    buildFoundationsApiProtectiveMonitoring (monitorSuccess, monitorException) {
+        r
     }
 
     // Successful response processing
@@ -71,19 +68,13 @@ export class FoundationsApiService extends ApiService {
             return response
         }
 
-        const protectiveMonitoring = foundationApiRequestOptions.protectiveMonitoring
-        if (protectiveMonitoring && protectiveMonitoring.monitorSuccess) {
-            this.protectivelyMonitorSuccessfulEvent(foundationApiRequestOptions, response)
-        }
+        this.processProtectiveMonitoring(foundationApiRequestOptions, response)
 
         if (foundationApiRequestOptions.returnDataOnly) {
             return response.data
         }
 
         return response
-    }
-
-    protectivelyMonitorSuccessfulEvent (foundationApiRequestOptions, response) {
     }
 
     // Exception response processing
@@ -96,16 +87,33 @@ export class FoundationsApiService extends ApiService {
             return exception.response
         }
 
-        const protectiveMonitoring = foundationApiRequestOptions.protectiveMonitoring
-        if (protectiveMonitoring && protectiveMonitoring.monitorException) {
-            this.protectivelyMonitorExceptionEvent(foundationApiRequestOptions, exception)
-        }
+        this.processProtectiveMonitoring(foundationApiRequestOptions, null, exception)
 
         return exception.response
     }
 
     logStandardException (foundationApiRequestConfig, exception) {
         this.logApiServiceException(foundationApiRequestConfig.method, foundationApiRequestConfig.url, exception)
+    }
+
+    // Protective monitoring
+
+    processProtectiveMonitoring (foundationApiRequestOptions, response, exception) {
+        const protectiveMonitoring = foundationApiRequestOptions.protectiveMonitoring
+        if (!protectiveMonitoring) {
+            return
+        }
+
+        if (protectiveMonitoring.monitorSuccess) {
+            this.protectivelyMonitorSuccessfulEvent(foundationApiRequestOptions, response)
+        }
+
+        if (protectiveMonitoring.monitorSuccess) {
+            this.protectivelyMonitorExceptionEvent(foundationApiRequestOptions, exception)
+        }
+    }
+
+    protectivelyMonitorSuccessfulEvent (foundationApiRequestOptions, response) {
     }
 
     protectivelyMonitorExceptionEvent (foundationApiRequestOptions, exception) {
