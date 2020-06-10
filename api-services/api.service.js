@@ -19,7 +19,6 @@ export class ApiService {
      */
     async get (requestConfig, responseOptions) {
         requestConfig.method = 'GET'
-        this.validateRequestConfig(requestConfig)
         return await this.actionRequest(requestConfig, responseOptions)
     }
 
@@ -80,6 +79,13 @@ export class ApiService {
         return requestConfig
     }
 
+    async actionRequest (requestConfig, responseOptions) {
+        this.validateRequestConfig(requestConfig)
+        return await this.axiosClient(requestConfig)
+            .then(response => this.processResponse(response, responseOptions))
+            .catch(exception => this.processException(exception, requestConfig, responseOptions))
+    }
+
     validateRequestConfig (requestConfig) {
         if (!requestConfig) {
             throw new Error('Request Config required')
@@ -90,12 +96,6 @@ export class ApiService {
         if (!requestConfig.headers || !requestConfig.headers['Content-Type']) {
             throw new Error('Request Config requires a content-type header')
         }
-    }
-
-    async actionRequest (requestConfig, responseOptions) {
-        return await this.axiosClient(requestConfig)
-            .then(response => this.processResponse(response, responseOptions))
-            .catch(exception => this.processException(exception, requestConfig, responseOptions))
     }
 
     processResponse (response, _responseOptions) {
