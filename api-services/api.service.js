@@ -19,8 +19,7 @@ export class ApiService {
      */
     async get (requestConfig, responseOptions) {
         requestConfig.method = 'GET'
-        // this.validateRequestConfig(requestConfig)
-        // Should probably verify various required things are set such as method and content type
+        this.validateRequestConfig(requestConfig)
         return await this.actionRequest(requestConfig, responseOptions)
     }
 
@@ -88,8 +87,8 @@ export class ApiService {
         if (!requestConfig.method) {
             throw new Error('Request Config requires a http method')
         }
-        if (!requestConfig.headers['Content-Type']) {
-            throw new Error('Request Config requires a content type')
+        if (!requestConfig.headers || !requestConfig.headers['Content-Type']) {
+            throw new Error('Request Config requires a content-type header')
         }
     }
 
