@@ -14,8 +14,8 @@ export class ApiService {
     /**
      * Calls a GET request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide extra headers if needed} extraHeaders
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
     async get (requestConfig, responseOptions) {
         requestConfig.method = 'GET'
@@ -25,47 +25,34 @@ export class ApiService {
     /**
      * Calls a POST request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide the data payload to be created} data
-     * @param {Provide extra headers if needed} extraHeaders
-     * @param {Provide maxContentLength if needed} maxContentLength
-     * @param {Provide maxBodyLength if needed} maxBodyLength
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
-    async post (url, data, extraHeaders, maxContentLength, maxBodyLength) {
-        const requestConfig = this.buildAxiosRequestOptions('POST', url, extraHeaders, data)
-
-        if (maxContentLength) {
-            requestConfig.maxContentLength = maxContentLength
-        }
-        if (maxBodyLength) {
-            requestConfig.maxBodyLength = maxBodyLength
-        }
-
-        return await this.actionRequest(requestConfig)
+    async post (requestConfig, responseOptions) {
+        requestConfig.method = 'POST'
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
     /**
      * Calls a PUT request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide the data payload to be updated} data
-     * @param {Provide extra headers if needed} extraHeaders
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
-    async put (url, data, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestOptions('PUT', url, extraHeaders, data)
-        return await this.actionRequest(requestConfig)
+    async put (requestConfig, responseOptions) {
+        requestConfig.method = 'PUT'
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
     /**
      * Calls a `PATCH` request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide the data payload to be updated id needed} data
-     * @param {Provide extra headers if needed} extraHeaders
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
-    async patch (url, data, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestOptions('PATCH', url, extraHeaders, data)
-        return await this.actionRequest(requestConfig)
+    async patch (requestConfig, responseOptions) {
+        requestConfig.method = 'PATCH'
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
     buildApiRequestConfig (url, headers, data) {
@@ -77,6 +64,20 @@ export class ApiService {
             requestConfig.data = data
         }
         return requestConfig
+    }
+
+    addMaxContentLengthToRequestConfiguration (requestConfiguration, maxContentLength) {
+        if (maxContentLength) {
+            requestConfiguration.maxContentLength = maxContentLength
+        }
+        return requestConfiguration
+    }
+
+    addMaxBodyLengthToRequestConfiguration (requestConfiguration, maxBodyLength) {
+        if (maxBodyLength) {
+            requestConfiguration.maxBodyLength = maxBodyLength
+        }
+        return requestConfiguration
     }
 
     async actionRequest (requestConfig, responseOptions) {

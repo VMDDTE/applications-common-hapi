@@ -21,8 +21,7 @@ export class FoundationsApiService extends ApiService {
      */
     async healthPing (baseServiceUrl, originatingRequestId) {
         const url = `${baseServiceUrl}/health/ping`
-        // We now call the foundations-api get method
-        return await this.get(this.buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
+        return await super.get(this.buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
     }
 
     buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
