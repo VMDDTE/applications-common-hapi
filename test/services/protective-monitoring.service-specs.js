@@ -60,14 +60,14 @@ describe('ProtectiveMonitoring.Service', function () {
             expect(mockedLogger.error.calledOnce).to.be.false
             const loggedInfoMessage = mockedLogger.info.firstCall.args[0]
 
-            expect(loggedInfoMessage).to.have.property('environment')
-            expect(loggedInfoMessage.environment).to.equal(environment)
+            expect(loggedInfoMessage).to.have.property('Environment')
+            expect(loggedInfoMessage.Environment).to.equal(environment)
 
-            expect(loggedInfoMessage).to.have.property('auditCode')
-            expect(loggedInfoMessage.auditCode).to.equal(auditCode)
+            expect(loggedInfoMessage).to.have.property('AuditCode')
+            expect(loggedInfoMessage.AuditCode).to.equal(auditCode)
 
-            expect(loggedInfoMessage).to.have.property('auditDescription')
-            expect(loggedInfoMessage.auditDescription).to.equal(auditDescription)
+            expect(loggedInfoMessage).to.have.property('AuditDescription')
+            expect(loggedInfoMessage.AuditDescription).to.equal(auditDescription)
         })
     })
 
@@ -93,14 +93,14 @@ describe('ProtectiveMonitoring.Service', function () {
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedErrorMessage = mockedLogger.error.firstCall.args[0]
 
-            expect(loggedErrorMessage).to.have.property('environment')
-            expect(loggedErrorMessage.environment).to.equal(environment)
+            expect(loggedErrorMessage).to.have.property('Environment')
+            expect(loggedErrorMessage.Environment).to.equal(environment)
 
-            expect(loggedErrorMessage).to.have.property('auditCode')
-            expect(loggedErrorMessage.auditCode).to.equal(auditCode)
+            expect(loggedErrorMessage).to.have.property('AuditCode')
+            expect(loggedErrorMessage.AuditCode).to.equal(auditCode)
 
-            expect(loggedErrorMessage).to.have.property('auditDescription')
-            expect(loggedErrorMessage.auditDescription).to.equal(auditDescription)
+            expect(loggedErrorMessage).to.have.property('AuditDescription')
+            expect(loggedErrorMessage.AuditDescription).to.equal(auditDescription)
         })
     })
 })

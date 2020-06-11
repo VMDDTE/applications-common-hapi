@@ -19,13 +19,14 @@ export class ProtectiveMonitoringService {
 const buildProtectiveMonitorMessage = function (environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority) {
     // Foundations has the following message template
     // {Environment} {AuditCode} {AuditDescription} {PMCDetails} {PMCType} {PMCCode} {Priority}
+    // Needs to be upper case to align with foundations format
     return {
-        environment,
-        auditCode,
-        auditDescription,
-        pmcDetails,
-        pmcType,
-        pmcCode,
-        priority
+        Environment: environment,
+        AuditCode: auditCode,
+        AuditDescription: auditDescription,
+        PMCDetails: pmcDetails,
+        PMCType: pmcType,
+        PMCCode: pmcCode,
+        Priority: priority
     }
 }
