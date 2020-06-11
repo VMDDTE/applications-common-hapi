@@ -5,14 +5,15 @@ import { describe, it } from 'mocha'
 import chai from 'chai'
 import sinon from 'sinon'
 import { FoundationsApiService } from '../../api-services/foundations-api.service'
+import { ProtectiveMonitoringService } from '../../services/protective-monitoring.service'
 import { checkForCorrelationIdHeader } from '../helpers'
 import nock from 'nock'
 
 const expect = chai.expect
 
 describe('FoundationsApi.Service', function () {
-    describe('#get', function () {
-        it('should return 200 response with correct data and correlation id header was added to request', async function () {
+    describe('#get no responseOptions', function () {
+        it('should return 200 response, correct data, correlation id header', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/api/1')
                 .reply(200, { 'test': 'pass' })
@@ -32,7 +33,7 @@ describe('FoundationsApi.Service', function () {
             expect(response.data.test).to.equal('pass')
         })
 
-        it('should return 400 response with correct data and error was logged', async function () {
+        it('should return 400 response, correct data, logged error', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/api/1')
                 .reply(400, { 'bad': 'request' })
@@ -63,7 +64,7 @@ describe('FoundationsApi.Service', function () {
             expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
         })
 
-        it('should return 500 response with correct data and log error', async function () {
+        it('should return 500 response, correct data, logged error', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/api/1')
                 .reply(500, { 'internal': 'server error' })
@@ -96,7 +97,7 @@ describe('FoundationsApi.Service', function () {
         })
     })
 
-    describe('#get returnDataOnly set to true', function () {
+    describe('#get with returnDataOnly responseOptions', function () {
         it('should return correct data, no response information', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/api/1')
@@ -106,17 +107,17 @@ describe('FoundationsApi.Service', function () {
 
             const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
             const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(true)
-            const data = await foundationsApiService.get(requestConfiguration, responseOptions)
+            const result = await foundationsApiService.get(requestConfiguration, responseOptions)
 
-            expect(data).not.to.have.property('status')
+            expect(result).not.to.have.property('status')
 
-            expect(data).not.to.have.property('data')
+            expect(result).not.to.have.property('data')
             // The data should just be the expected response data, nothing else
-            expect(data).to.have.property('test')
-            expect(data.test).to.equal('pass')
+            expect(result).to.have.property('test')
+            expect(result.test).to.equal('pass')
         })
 
-        it('should return 400 response with correct data and error was logged', async function () {
+        it('should return 400 response, correct data, logged error', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/api/1')
                 .reply(400, { 'bad': 'request' })
@@ -127,7 +128,8 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService(mockedLogger)
             const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, true)
-            const response = await foundationsApiService.get(requestConfiguration)
+            const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(true)
+            const response = await foundationsApiService.get(requestConfiguration, responseOptions)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(400)
@@ -147,8 +149,119 @@ describe('FoundationsApi.Service', function () {
         })
     })
 
+    describe('#get with protectiveMonitoring responseOptions', function () {
+        it('should return 200 response, correct data, correlation id header, protective monitor successful event', async function () {
+            nock('http://test.foundationsapiservice.com')
+                .get('/api/1')
+                .reply(200, { 'test': 'pass' })
+
+            const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
+            const mockedLog4js = {
+                getLogger: function (logName) {
+                    if (logName === 'protective-monitoring') {
+                        return mockedPmLogger
+                    }
+                    return null
+                }
+            }
+            const protectiveMonitoringService = new ProtectiveMonitoringService(mockedLog4js)
+            const foundationsApiService = new FoundationsApiService({}, protectiveMonitoringService)
+
+            const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
+
+            const auditCode = 'TEST_123'
+            const auditDescription = 'Testing protective monitoring'
+            const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', true, { auditCode, auditDescription })
+            const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
+
+            const response = await foundationsApiService.get(requestConfiguration, responseOptions)
+
+            checkForCorrelationIdHeader(response, '12345')
+
+            expect(response).to.have.property('status')
+            expect(response.status).to.equal(200)
+
+            expect(response).to.have.property('data')
+            expect(response.data).to.have.property('test')
+            expect(response.data.test).to.equal('pass')
+
+            expect(mockedPmLogger.info.calledOnce).to.be.true
+            expect(mockedPmLogger.error.calledOnce).to.be.false
+            const loggedPmInfoMessage = mockedPmLogger.info.firstCall.args[0]
+
+            expect(loggedPmInfoMessage).to.have.property('Environment')
+            expect(loggedPmInfoMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
+
+            expect(loggedPmInfoMessage).to.have.property('AuditCode')
+            expect(loggedPmInfoMessage.AuditCode).to.equal(auditCode)
+
+            expect(loggedPmInfoMessage).to.have.property('AuditDescription')
+            expect(loggedPmInfoMessage.AuditDescription).to.equal(auditDescription)
+        })
+
+        it('should return 400 response, correct data, logged error, protective monitor exception event', async function () {
+            nock('http://test.foundationsapiservice.com')
+                .get('/api/1')
+                .reply(400, { 'bad': 'request' })
+
+            let mockedLogger = {
+                error: sinon.spy()
+            }
+
+            const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
+            const mockedLog4js = {
+                getLogger: function (logName) {
+                    if (logName === 'protective-monitoring') {
+                        return mockedPmLogger
+                    }
+                    return null
+                }
+            }
+            const protectiveMonitoringService = new ProtectiveMonitoringService(mockedLog4js)
+            const foundationsApiService = new FoundationsApiService(mockedLogger, protectiveMonitoringService)
+
+            const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
+
+            const auditCode = 'TEST_123'
+            const auditDescription = 'Testing protective monitoring'
+            const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', null, null, true, { auditCode, auditDescription })
+            const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
+
+            const response = await foundationsApiService.get(requestConfiguration, responseOptions)
+
+            expect(response).to.have.property('status')
+            expect(response.status).to.equal(400)
+
+            expect(response).to.have.property('data')
+            expect(response.data).to.have.property('bad')
+            expect(response.data.bad).to.equal('request')
+
+            expect(mockedLogger.error.calledOnce).to.be.true
+            const loggedError = mockedLogger.error.firstCall.args[0]
+
+            expect(loggedError).to.have.property('ApiServiceUrl')
+            expect(loggedError.ApiServiceUrl).to.equal('[GET] http://test.foundationsapiservice.com/api/1')
+
+            expect(loggedError).to.have.property('Exception')
+            expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+
+            expect(mockedPmLogger.info.calledOnce).to.be.false
+            expect(mockedPmLogger.error.calledOnce).to.be.true
+            const loggedPmErrorMessage = mockedPmLogger.error.firstCall.args[0]
+
+            expect(loggedPmErrorMessage).to.have.property('Environment')
+            expect(loggedPmErrorMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
+
+            expect(loggedPmErrorMessage).to.have.property('AuditCode')
+            expect(loggedPmErrorMessage.AuditCode).to.equal(auditCode)
+
+            expect(loggedPmErrorMessage).to.have.property('AuditDescription')
+            expect(loggedPmErrorMessage.AuditDescription).to.equal(auditDescription)
+        })
+    })
+
     describe('#health ping', function () {
-        it('should return 200 response with correct data and correlation id header was added to request', async function () {
+        it('should return 200 response, correct data, correlation id header', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/health/ping')
                 .reply(200, { 'test': 'pass' })
@@ -167,7 +280,7 @@ describe('FoundationsApi.Service', function () {
             expect(response.data.test).to.equal('pass')
         })
 
-        it('should return 400 response with correct data and error was logged', async function () {
+        it('should return 400 response, correct data, logged error', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/health/ping')
                 .reply(400, { 'bad': 'request' })
@@ -197,7 +310,7 @@ describe('FoundationsApi.Service', function () {
             expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
         })
 
-        it('should return 500 response with correct data and log error', async function () {
+        it('should return 500 response, correct data, logged error', async function () {
             nock('http://test.foundationsapiservice.com')
                 .get('/health/ping')
                 .reply(500, { 'internal': 'server error' })

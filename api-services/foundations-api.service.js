@@ -2,6 +2,13 @@ import { ApiService } from './api.service'
 import HttpHeaders from '../enums/http-headers.enum'
 
 export class FoundationsApiService extends ApiService {
+    constructor (logger, protectiveMonitoringService) {
+        super(logger)
+
+        // Should protective monitor service be required?
+        this.protectiveMonitoringService = protectiveMonitoringService
+    }
+
     /**
      * Calls a GET request to an API.
      *
@@ -56,10 +63,13 @@ export class FoundationsApiService extends ApiService {
         return responseOptions
     }
 
-    buildFoundationsApiProtectiveMonitoring (monitorSuccess, monitorException) {
+    buildFoundationsApiProtectiveMonitoring (environment, monitorSuccess, successfulMonitoringOptions, monitorException, exceptionMonitoringOptions) {
         return {
+            environment,
             monitorSuccess,
-            monitorException
+            successfulMonitoringOptions,
+            monitorException,
+            exceptionMonitoringOptions
         }
     }
 
@@ -107,17 +117,33 @@ export class FoundationsApiService extends ApiService {
         }
 
         if (protectiveMonitoring.monitorSuccess) {
-            this.protectivelyMonitorSuccessfulEvent(foundationApiRequestOptions, response)
+            this.protectivelyMonitorSuccessfulEvent(protectiveMonitoring, response)
         }
 
         if (protectiveMonitoring.monitorException) {
-            this.protectivelyMonitorExceptionEvent(foundationApiRequestOptions, exception)
+            this.protectivelyMonitorExceptionEvent(protectiveMonitoring, exception)
         }
     }
 
-    protectivelyMonitorSuccessfulEvent (foundationApiRequestOptions, response) {
+    protectivelyMonitorSuccessfulEvent (protectiveMonitoring, response) {
+        const environment = protectiveMonitoring.environment
+        const successfulMonitoringOptions = protectiveMonitoring.successfulMonitoringOptions
+        const auditCode = successfulMonitoringOptions.auditCode
+        const auditDescription = successfulMonitoringOptions.auditDescription
+
+        if (this.protectiveMonitoringService && successfulMonitoringOptions) {
+            this.protectiveMonitoringService.monitorEventInformation(environment, auditCode, auditDescription)
+        }
     }
 
-    protectivelyMonitorExceptionEvent (foundationApiRequestOptions, exception) {
+    protectivelyMonitorExceptionEvent (protectiveMonitoring, exception) {
+        const environment = protectiveMonitoring.environment
+        const exceptionMonitoringOptions = protectiveMonitoring.exceptionMonitoringOptions
+        const auditCode = exceptionMonitoringOptions.auditCode
+        const auditDescription = exceptionMonitoringOptions.auditDescription
+
+        if (this.protectiveMonitoringService && exceptionMonitoringOptions) {
+            this.protectiveMonitoringService.monitorEventError(environment, auditCode, auditDescription)
+        }
     }
 }

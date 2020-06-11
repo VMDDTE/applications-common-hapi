@@ -40,11 +40,11 @@ describe('ProtectiveMonitoring.Service', function () {
 
     describe('#monitorEventInformation', function () {
         it('should log info message with correct details', async function () {
-            const mockedLogger = { info: sinon.spy(), error: sinon.spy() }
+            const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
             let mockedLog4js = {
                 getLogger: function (logName) {
                     if (logName === 'protective-monitoring') {
-                        return mockedLogger
+                        return mockedPmLogger
                     }
                     return null
                 }
@@ -56,9 +56,9 @@ describe('ProtectiveMonitoring.Service', function () {
             const auditDescription = 'something has been protectively monitored'
             protectiveMonitoringService.monitorEventInformation(environment, auditCode, auditDescription)
 
-            expect(mockedLogger.info.calledOnce).to.be.true
-            expect(mockedLogger.error.calledOnce).to.be.false
-            const loggedInfoMessage = mockedLogger.info.firstCall.args[0]
+            expect(mockedPmLogger.info.calledOnce).to.be.true
+            expect(mockedPmLogger.error.calledOnce).to.be.false
+            const loggedInfoMessage = mockedPmLogger.info.firstCall.args[0]
 
             expect(loggedInfoMessage).to.have.property('Environment')
             expect(loggedInfoMessage.Environment).to.equal(environment)
