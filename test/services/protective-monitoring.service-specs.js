@@ -58,7 +58,7 @@ describe('ProtectiveMonitoring.Service', function () {
 
             expect(mockedPmLogger.info.calledOnce).to.be.true
             expect(mockedPmLogger.error.calledOnce).to.be.false
-            const loggedInfoMessage = mockedPmLogger.info.firstCall.args[0]
+            const loggedInfoMessage = JSON.parse(mockedPmLogger.info.firstCall.args[0])
 
             expect(loggedInfoMessage).to.have.property('Environment')
             expect(loggedInfoMessage.Environment).to.equal(environment)
@@ -73,11 +73,11 @@ describe('ProtectiveMonitoring.Service', function () {
 
     describe('#monitorEventError', function () {
         it('should log error message with correct details', async function () {
-            const mockedLogger = { info: sinon.spy(), error: sinon.spy() }
+            const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
             let mockedLog4js = {
                 getLogger: function (logName) {
                     if (logName === 'protective-monitoring') {
-                        return mockedLogger
+                        return mockedPmLogger
                     }
                     return null
                 }
@@ -89,9 +89,9 @@ describe('ProtectiveMonitoring.Service', function () {
             const auditDescription = 'something has been protectively monitored'
             protectiveMonitoringService.monitorEventError(environment, auditCode, auditDescription)
 
-            expect(mockedLogger.info.calledOnce).to.be.false
-            expect(mockedLogger.error.calledOnce).to.be.true
-            const loggedErrorMessage = mockedLogger.error.firstCall.args[0]
+            expect(mockedPmLogger.info.calledOnce).to.be.false
+            expect(mockedPmLogger.error.calledOnce).to.be.true
+            const loggedErrorMessage = JSON.parse(mockedPmLogger.error.firstCall.args[0])
 
             expect(loggedErrorMessage).to.have.property('Environment')
             expect(loggedErrorMessage.Environment).to.equal(environment)

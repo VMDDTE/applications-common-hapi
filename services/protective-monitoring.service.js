@@ -6,11 +6,23 @@ export class ProtectiveMonitoringService {
     }
 
     monitorEventInformation (environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority) {
-        this.log4jsLogger.info(buildProtectiveMonitorMessage(environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority))
+        const message = buildProtectiveMonitorMessage(environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority)
+        this.logMessage(true, message)
     }
 
     monitorEventError (environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority) {
-        this.log4jsLogger.error(buildProtectiveMonitorMessage(environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority))
+        const message = buildProtectiveMonitorMessage(environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority)
+        this.logMessage(false, message)
+    }
+
+    logMessage (isInfoLog, message) {
+        // Certainly for writing logs to file we need to stringify to ensure valid json
+        const messageAsString = JSON.stringify(message)
+        if (isInfoLog) {
+            this.log4jsLogger.info(messageAsString)
+        } else {
+            this.log4jsLogger.error(messageAsString)
+        }
     }
 }
 

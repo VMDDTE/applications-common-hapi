@@ -187,7 +187,7 @@ describe('FoundationsApi.Service', function () {
 
             expect(mockedPmLogger.info.calledOnce).to.be.true
             expect(mockedPmLogger.error.calledOnce).to.be.false
-            const loggedPmInfoMessage = mockedPmLogger.info.firstCall.args[0]
+            const loggedPmInfoMessage = JSON.parse(mockedPmLogger.info.firstCall.args[0])
 
             expect(loggedPmInfoMessage).to.have.property('Environment')
             expect(loggedPmInfoMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
@@ -247,7 +247,7 @@ describe('FoundationsApi.Service', function () {
 
             expect(mockedPmLogger.info.calledOnce).to.be.false
             expect(mockedPmLogger.error.calledOnce).to.be.true
-            const loggedPmErrorMessage = mockedPmLogger.error.firstCall.args[0]
+            const loggedPmErrorMessage = JSON.parse(mockedPmLogger.error.firstCall.args[0])
 
             expect(loggedPmErrorMessage).to.have.property('Environment')
             expect(loggedPmErrorMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
