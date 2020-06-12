@@ -3,7 +3,7 @@
 // So we will use 100,000 - 199,000 for applcations audit codes
 // CRM: 100,000 - 100,999
 // Licensing: 101000 - 101999
-export default {
+export const AuditCodeEnum = {
     LICENSING_SUBMISSION_FAILURE: 101000
 }
 
