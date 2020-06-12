@@ -169,9 +169,8 @@ describe('FoundationsApi.Service', function () {
 
             const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
 
-            const auditCode = 'TEST_123'
-            const auditDescription = 'Testing protective monitoring'
-            const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', true, { auditCode, auditDescription })
+            const successfulMonitoringOptions = foundationsApiService.buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
+            const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', successfulMonitoringOptions)
             const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
 
             const response = await foundationsApiService.get(requestConfiguration, responseOptions)
@@ -193,10 +192,10 @@ describe('FoundationsApi.Service', function () {
             expect(loggedPmInfoMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
 
             expect(loggedPmInfoMessage).to.have.property('AuditCode')
-            expect(loggedPmInfoMessage.AuditCode).to.equal(auditCode)
+            expect(loggedPmInfoMessage.AuditCode).to.equal(successfulMonitoringOptions.auditCode)
 
             expect(loggedPmInfoMessage).to.have.property('AuditDescription')
-            expect(loggedPmInfoMessage.AuditDescription).to.equal(auditDescription)
+            expect(loggedPmInfoMessage.AuditDescription).to.equal(successfulMonitoringOptions.auditDescription)
         })
 
         it('should return 400 response, correct data, logged error, protective monitor exception event', async function () {
@@ -222,9 +221,8 @@ describe('FoundationsApi.Service', function () {
 
             const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
 
-            const auditCode = 'TEST_123'
-            const auditDescription = 'Testing protective monitoring'
-            const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', null, null, true, { auditCode, auditDescription })
+            const exceptionMonitoringOptions = foundationsApiService.buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
+            const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', null, exceptionMonitoringOptions)
             const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
 
             const response = await foundationsApiService.get(requestConfiguration, responseOptions)
@@ -253,10 +251,10 @@ describe('FoundationsApi.Service', function () {
             expect(loggedPmErrorMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
 
             expect(loggedPmErrorMessage).to.have.property('AuditCode')
-            expect(loggedPmErrorMessage.AuditCode).to.equal(auditCode)
+            expect(loggedPmErrorMessage.AuditCode).to.equal(exceptionMonitoringOptions.auditCode)
 
             expect(loggedPmErrorMessage).to.have.property('AuditDescription')
-            expect(loggedPmErrorMessage.AuditDescription).to.equal(auditDescription)
+            expect(loggedPmErrorMessage.AuditDescription).to.equal(exceptionMonitoringOptions.auditDescription)
         })
     })
 

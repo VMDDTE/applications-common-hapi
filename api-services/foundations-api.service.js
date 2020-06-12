@@ -63,13 +63,22 @@ export class FoundationsApiService extends ApiService {
         return responseOptions
     }
 
-    buildFoundationsApiProtectiveMonitoring (environment, monitorSuccess, successfulMonitoringOptions, monitorException, exceptionMonitoringOptions) {
+    buildFoundationsApiProtectiveMonitoring (environment, successfulMonitoringOptions, exceptionMonitoringOptions) {
         return {
             environment,
-            monitorSuccess,
             successfulMonitoringOptions,
-            monitorException,
             exceptionMonitoringOptions
+        }
+    }
+
+    buildProtectiveMonitoringOptions (auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority) {
+        return {
+            auditCode,
+            auditDescription,
+            pmcDetails,
+            pmcType,
+            pmcCode,
+            priority
         }
     }
 
@@ -116,33 +125,29 @@ export class FoundationsApiService extends ApiService {
             return
         }
 
-        if (protectiveMonitoring.monitorSuccess) {
-            this.protectivelyMonitorSuccessfulEvent(protectiveMonitoring, response)
+        if (protectiveMonitoring.successfulMonitoringOptions) {
+            this.protectivelyMonitorSuccessfulEvent(protectiveMonitoring.environment, protectiveMonitoring.successfulMonitoringOptions, response)
         }
 
-        if (protectiveMonitoring.monitorException) {
-            this.protectivelyMonitorExceptionEvent(protectiveMonitoring, exception)
+        if (protectiveMonitoring.exceptionMonitoringOptions) {
+            this.protectivelyMonitorExceptionEvent(protectiveMonitoring.environment, protectiveMonitoring.exceptionMonitoringOptions, exception)
         }
     }
 
-    protectivelyMonitorSuccessfulEvent (protectiveMonitoring, response) {
-        const environment = protectiveMonitoring.environment
-        const successfulMonitoringOptions = protectiveMonitoring.successfulMonitoringOptions
+    protectivelyMonitorSuccessfulEvent (environment, successfulMonitoringOptions, response) {
         const auditCode = successfulMonitoringOptions.auditCode
         const auditDescription = successfulMonitoringOptions.auditDescription
 
-        if (this.protectiveMonitoringService && successfulMonitoringOptions) {
+        if (this.protectiveMonitoringService) {
             this.protectiveMonitoringService.monitorEventInformation(environment, auditCode, auditDescription)
         }
     }
 
-    protectivelyMonitorExceptionEvent (protectiveMonitoring, exception) {
-        const environment = protectiveMonitoring.environment
-        const exceptionMonitoringOptions = protectiveMonitoring.exceptionMonitoringOptions
+    protectivelyMonitorExceptionEvent (environment, exceptionMonitoringOptions, exception) {
         const auditCode = exceptionMonitoringOptions.auditCode
         const auditDescription = exceptionMonitoringOptions.auditDescription
 
-        if (this.protectiveMonitoringService && exceptionMonitoringOptions) {
+        if (this.protectiveMonitoringService) {
             this.protectiveMonitoringService.monitorEventError(environment, auditCode, auditDescription)
         }
     }
