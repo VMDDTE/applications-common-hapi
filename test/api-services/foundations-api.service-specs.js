@@ -169,7 +169,7 @@ describe('FoundationsApi.Service', function () {
 
             const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
 
-            const successfulMonitoringOptions = foundationsApiService.buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
+            const successfulMonitoringOptions = protectiveMonitoringService.buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
             const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', successfulMonitoringOptions)
             const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
 
@@ -217,11 +217,12 @@ describe('FoundationsApi.Service', function () {
                 }
             }
             const protectiveMonitoringService = new ProtectiveMonitoringService(mockedLog4js)
+            const exceptionMonitoringOptions = protectiveMonitoringService.buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
+
             const foundationsApiService = new FoundationsApiService(mockedLogger, protectiveMonitoringService)
 
             const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
 
-            const exceptionMonitoringOptions = foundationsApiService.buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
             const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', null, exceptionMonitoringOptions)
             const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
 

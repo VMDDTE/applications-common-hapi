@@ -71,17 +71,6 @@ export class FoundationsApiService extends ApiService {
         }
     }
 
-    buildProtectiveMonitoringOptions (auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority) {
-        return {
-            auditCode,
-            auditDescription,
-            pmcDetails,
-            pmcType,
-            pmcCode,
-            priority
-        }
-    }
-
     // Successful response processing
 
     processResponse (response, foundationApiRequestOptions) {
@@ -135,28 +124,14 @@ export class FoundationsApiService extends ApiService {
     }
 
     protectivelyMonitorSuccessfulEvent (environment, successfulMonitoringOptions, response) {
-        const auditCode = successfulMonitoringOptions.auditCode
-        const auditDescription = successfulMonitoringOptions.auditDescription
-        const pmcDetails = successfulMonitoringOptions.pmcDetails
-        const pmcType = successfulMonitoringOptions.pmcType
-        const pmcCode = successfulMonitoringOptions.pmcCode
-        const priority = successfulMonitoringOptions.priority
-
         if (this.protectiveMonitoringService) {
-            this.protectiveMonitoringService.monitorEventInformation(environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority)
+            this.protectiveMonitoringService.monitorEventInformation(environment, successfulMonitoringOptions)
         }
     }
 
     protectivelyMonitorExceptionEvent (environment, exceptionMonitoringOptions, exception) {
-        const auditCode = exceptionMonitoringOptions.auditCode
-        const auditDescription = exceptionMonitoringOptions.auditDescription
-        const pmcDetails = exceptionMonitoringOptions.pmcDetails
-        const pmcType = exceptionMonitoringOptions.pmcType
-        const pmcCode = exceptionMonitoringOptions.pmcCode
-        const priority = exceptionMonitoringOptions.priority
-
         if (this.protectiveMonitoringService) {
-            this.protectiveMonitoringService.monitorEventError(environment, auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority)
+            this.protectiveMonitoringService.monitorEventError(environment, exceptionMonitoringOptions)
         }
     }
 }

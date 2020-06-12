@@ -54,7 +54,7 @@ describe('ProtectiveMonitoring.Service', function () {
             const environment = 'test'
             const auditCode = 12345
             const auditDescription = 'something has been protectively monitored'
-            protectiveMonitoringService.monitorEventInformation(environment, auditCode, auditDescription)
+            protectiveMonitoringService.monitorEventInformation(environment, { auditCode, auditDescription })
 
             expect(mockedPmLogger.info.calledOnce).to.be.true
             expect(mockedPmLogger.error.calledOnce).to.be.false
@@ -87,7 +87,7 @@ describe('ProtectiveMonitoring.Service', function () {
             const environment = 'test'
             const auditCode = 12345
             const auditDescription = 'something has been protectively monitored'
-            protectiveMonitoringService.monitorEventError(environment, auditCode, auditDescription)
+            protectiveMonitoringService.monitorEventError(environment, { auditCode, auditDescription })
 
             expect(mockedPmLogger.info.calledOnce).to.be.false
             expect(mockedPmLogger.error.calledOnce).to.be.true
