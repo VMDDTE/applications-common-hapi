@@ -57,15 +57,7 @@ describe('Api.Service', function () {
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
-
-            expect(loggedError).to.have.property('ErrorStatus')
-            expect(loggedError.ErrorStatus).to.equal(400)
-
-            expect(loggedError).to.have.property('ApiServiceUrl')
-            expect(loggedError.ApiServiceUrl).to.equal(`[GET] ${getDomain}${getUri}`)
-
-            expect(loggedError).to.have.property('Exception')
-            expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+            checkLoggedErrorDetails(loggedError, 400, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 400')
         })
 
         it('should log error with correct message and rethrow error', async function () {
@@ -182,6 +174,78 @@ describe('Api.Service', function () {
         })
     })
 
+    describe('#put', function () {
+        const putDomain = 'http://test-put.apiservice.com'
+        const putUri = '/api/1'
+
+        it('should return 200 with correct data', async function () {
+            nock(putDomain)
+                .put(putUri)
+                .reply(200, { 'test': 'pass' })
+
+            const apiService = new ApiService({})
+            const requestConfiguration = apiService.buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
+            const response = await apiService.put(requestConfiguration)
+
+            expect(response).to.have.property('status')
+            expect(response.status).to.equal(200)
+
+            expect(response).to.have.property('data')
+            expect(response.data).to.have.property('test')
+            expect(response.data.test).to.equal('pass')
+        })
+
+        it('should return 400 with correct data', async function () {
+            nock(putDomain)
+                .put(putUri)
+                .reply(400, { 'bad': 'request' })
+
+            let mockedLogger = {
+                error: sinon.spy()
+            }
+
+            const apiService = new ApiService(mockedLogger)
+            const requestConfiguration = apiService.buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
+            await expectThrowsAsync(() => apiService.put(requestConfiguration))
+
+            expect(mockedLogger.error.calledOnce).to.be.true
+            const loggedError = mockedLogger.error.firstCall.args[0]
+            checkLoggedErrorDetails(loggedError, 400, `[PUT] ${putDomain}${putUri}`, 'Error: Request failed with status code 400')
+        })
+
+        it('should log error with correct message and rethrow error', async function () {
+            nock(putDomain)
+                .put(putUri)
+                .reply(500, { 'internal': 'server error' })
+
+            let mockedLogger = {
+                error: sinon.spy()
+            }
+
+            const apiService = new ApiService(mockedLogger)
+            const requestConfiguration = apiService.buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
+            await expectThrowsAsync(() => apiService.put(requestConfiguration))
+
+            expect(mockedLogger.error.calledOnce).to.be.true
+            const loggedError = mockedLogger.error.firstCall.args[0]
+            checkLoggedErrorDetails(loggedError, 500, `[PUT] ${putDomain}${putUri}`, 'Error: Request failed with status code 500')
+        })
+
+        it('should throw error when no content-type provided', async function () {
+            nock(putDomain)
+                .put(putUri)
+                .reply(500, { 'internal': 'server error' })
+
+            let mockedLogger = {
+                error: sinon.spy()
+            }
+
+            const apiService = new ApiService(mockedLogger)
+            const requestConfiguration = apiService.buildApiRequestConfig(`${putDomain}${putUri}`)
+            await expectThrowsAsync(() => apiService.put(requestConfiguration), 'Request Config requires a content-type header')
+        })
+    })
+
     describe('#patch', function () {
         const patchDomain = 'http://test-patch.apiservice.com'
         const patchUri = '/api/1'
@@ -218,15 +282,7 @@ describe('Api.Service', function () {
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
-
-            expect(loggedError).to.have.property('ErrorStatus')
-            expect(loggedError.ErrorStatus).to.equal(400)
-
-            expect(loggedError).to.have.property('ApiServiceUrl')
-            expect(loggedError.ApiServiceUrl).to.equal(`[PATCH] ${patchDomain}${patchUri}`)
-
-            expect(loggedError).to.have.property('Exception')
-            expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+            checkLoggedErrorDetails(loggedError, 400, `[PATCH] ${patchDomain}${patchUri}`, 'Error: Request failed with status code 400')
         })
 
         it('should log error with correct message and rethrow error', async function () {
