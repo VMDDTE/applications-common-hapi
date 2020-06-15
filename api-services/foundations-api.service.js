@@ -2,6 +2,13 @@ import { ApiService } from './api.service'
 import HttpHeaders from '../enums/http-headers.enum'
 
 export class FoundationsApiService extends ApiService {
+    constructor (logger, protectiveMonitoringService) {
+        super(logger)
+
+        // Should protective monitor service be required?
+        this.protectiveMonitoringService = protectiveMonitoringService
+    }
+
     /**
      * Calls a GET request to an API.
      *
@@ -10,21 +17,8 @@ export class FoundationsApiService extends ApiService {
      * @param {Provide extra headers if needed} extraHeaders
      * @param {Indicate if whole response should be returned} returnDataOnly
      */
-    async get (foundationApiRequestConfiguration, returnDataOnly = false) {
-        const headers = this.addCorrelationIdHeader(foundationApiRequestConfiguration)
-        return await super.get(foundationApiRequestConfiguration.url, headers).then(response => this.returnDataOnlyIfSuccessful(response, returnDataOnly))
-    }
-
-    returnDataOnlyIfSuccessful (response, returnDataOnly) {
-        // This shared library 'api' service was based on the licensing version, in which the get (and only get) was successful then the response data was extracted/returned
-        // Due to the generic nature of this shared library I have now made it optional if flag is passed, otherwise full response is returned
-        if (returnDataOnly) {
-            if (response.status >= 200 && response.status < 300) {
-                return response.data
-            }
-        }
-
-        return response
+    async get (foundationApiRequestConfig, foundationsApiResponseOptions) {
+        return await super.get(foundationApiRequestConfig, foundationsApiResponseOptions)
     }
 
     /**
@@ -34,39 +28,110 @@ export class FoundationsApiService extends ApiService {
      */
     async healthPing (baseServiceUrl, originatingRequestId) {
         const url = `${baseServiceUrl}/health/ping`
-        // We now call the foundations-api get method
-        return await this.get(this.buildFoundationApiRequestConfiguration(url, originatingRequestId))
+        return await super.get(this.buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
     }
 
-    buildFoundationApiRequestConfiguration (url, originatingRequestId, extraHeaders) {
-        const requestConfiguration = {
-            url
+    buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
+        const requestConfiguration = this.buildApiRequestConfig(url, headers, data)
+
+        let requestConfigurationHeaders = requestConfiguration.headers
+        if (!requestConfigurationHeaders || !requestConfigurationHeaders['Content-Type']) {
+            // No content type, default to json
+            requestConfigurationHeaders = requestConfigurationHeaders || {}
+            requestConfigurationHeaders['Content-Type'] = 'application/json'
         }
-        // Only add properties if values are present
+
         if (originatingRequestId) {
-            requestConfiguration.originatingRequestId = originatingRequestId
+            requestConfigurationHeaders = requestConfigurationHeaders || {}
+            requestConfigurationHeaders[HttpHeaders.CORRELATION_ID] = originatingRequestId
         }
-        if (extraHeaders) {
-            requestConfiguration.extraHeaders = extraHeaders
-        }
+
+        requestConfiguration.headers = requestConfigurationHeaders
+
         return requestConfiguration
     }
 
-    addCorrelationIdHeader (foundationApiRequestConfiguration) {
-        // Until such time that everything passes a correlation id and we can enforce, only add if we have it otherwise error are seen
-        if (!foundationApiRequestConfiguration.originatingRequestId) {
-            return foundationApiRequestConfiguration.extraHeaders
-        }
+    buildFoundationsApiResponseOptions (returnDataOnly, protectiveMonitoring) {
+        const responseOptions = { }
 
+        if (returnDataOnly) {
+            responseOptions.returnDataOnly = returnDataOnly
+        }
+        if (protectiveMonitoring) {
+            responseOptions.protectiveMonitoring = protectiveMonitoring
+        }
+        return responseOptions
+    }
+
+    buildFoundationsApiProtectiveMonitoring (environment, successfulMonitoringOptions, exceptionMonitoringOptions) {
         return {
-            ...foundationApiRequestConfiguration.extraHeaders,
-            [HttpHeaders.CORRELATION_ID]: foundationApiRequestConfiguration.originatingRequestId
+            environment,
+            successfulMonitoringOptions,
+            exceptionMonitoringOptions
         }
     }
 
-    processException (httpMethod, url, exception) {
-        this.logApiServiceException(httpMethod, url, exception)
+    // Successful response processing
+
+    processResponse (response, foundationApiRequestOptions) {
+        if (!foundationApiRequestOptions) {
+            return response
+        }
+
+        this.processProtectiveMonitoring(foundationApiRequestOptions, response)
+
+        if (foundationApiRequestOptions.returnDataOnly) {
+            return response.data
+        }
+
+        return response
+    }
+
+    // Exception response processing
+
+    processException (exception, foundationApiRequestConfig, foundationApiRequestOptions) {
+        this.logStandardException(foundationApiRequestConfig, exception)
+
         // The original api service created in Licensing, simply consumed the error after logging, however returning the response will be more useful
+        if (!foundationApiRequestOptions) {
+            return exception.response
+        }
+
+        this.processProtectiveMonitoring(foundationApiRequestOptions, null, exception)
+
         return exception.response
+    }
+
+    logStandardException (foundationApiRequestConfig, exception) {
+        this.logApiServiceException(foundationApiRequestConfig.method, foundationApiRequestConfig.url, exception)
+    }
+
+    // Protective monitoring
+
+    processProtectiveMonitoring (foundationApiRequestOptions, response, exception) {
+        const protectiveMonitoring = foundationApiRequestOptions.protectiveMonitoring
+        if (!protectiveMonitoring) {
+            return
+        }
+
+        if (protectiveMonitoring.successfulMonitoringOptions) {
+            this.protectivelyMonitorSuccessfulEvent(protectiveMonitoring.environment, protectiveMonitoring.successfulMonitoringOptions, response)
+        }
+
+        if (protectiveMonitoring.exceptionMonitoringOptions) {
+            this.protectivelyMonitorExceptionEvent(protectiveMonitoring.environment, protectiveMonitoring.exceptionMonitoringOptions, exception)
+        }
+    }
+
+    protectivelyMonitorSuccessfulEvent (environment, successfulMonitoringOptions, response) {
+        if (this.protectiveMonitoringService) {
+            this.protectiveMonitoringService.monitorEventInformation(environment, successfulMonitoringOptions)
+        }
+    }
+
+    protectivelyMonitorExceptionEvent (environment, exceptionMonitoringOptions, exception) {
+        if (this.protectiveMonitoringService) {
+            this.protectiveMonitoringService.monitorEventError(environment, exceptionMonitoringOptions)
+        }
     }
 }

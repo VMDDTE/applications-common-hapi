@@ -28,8 +28,8 @@ describe('Api.Service', function () {
                 .reply(200, { 'test': 'pass' })
 
             const apiService = new ApiService({})
-
-            const response = await apiService.get('http://test.apiservice.com/api/1')
+            const requestConfiguration = apiService.buildApiRequestConfig('http://test.apiservice.com/api/1', { 'Content-Type': 'application/test' })
+            const response = await apiService.get(requestConfiguration)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(200)
@@ -49,8 +49,8 @@ describe('Api.Service', function () {
             }
 
             const apiService = new ApiService(mockedLogger)
-
-            await expectThrowsAsync(() => apiService.get('http://test.apiservice.com/api/1'))
+            const requestConfiguration = apiService.buildApiRequestConfig('http://test.apiservice.com/api/1', { 'Content-Type': 'application/test' })
+            await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
@@ -75,8 +75,8 @@ describe('Api.Service', function () {
             }
 
             const apiService = new ApiService(mockedLogger)
-
-            await expectThrowsAsync(() => apiService.get('http://test.apiservice.com/api/1'))
+            const requestConfiguration = apiService.buildApiRequestConfig('http://test.apiservice.com/api/1', { 'Content-Type': 'application/test' })
+            await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
@@ -89,6 +89,20 @@ describe('Api.Service', function () {
 
             expect(loggedError).to.have.property('Exception')
             expect(loggedError.Exception).to.match(/^Error: Request failed with status code 500/)
+        })
+
+        it('should throw error when no content-type provided', async function () {
+            nock('http://test.apiservice.com')
+                .get('/api/1')
+                .reply(500, { 'internal': 'server error' })
+
+            let mockedLogger = {
+                error: sinon.spy()
+            }
+
+            const apiService = new ApiService(mockedLogger)
+            const requestConfiguration = apiService.buildApiRequestConfig('http://test.apiservice.com/api/1')
+            await expectThrowsAsync(() => apiService.get(requestConfiguration), 'Request Config requires a content-type header')
         })
     })
 })

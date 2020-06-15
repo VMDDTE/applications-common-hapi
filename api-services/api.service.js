@@ -7,7 +7,6 @@ export class ApiService {
             throw new Error('ApiService required a logger')
         }
 
-        this.baseHeaders = { 'Content-Type': 'application/json' }
         this.axiosClient = axios
         this.logger = logger
     }
@@ -15,68 +14,51 @@ export class ApiService {
     /**
      * Calls a GET request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide extra headers if needed} extraHeaders
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
-    async get (url, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestConfig('GET', url, extraHeaders)
-        return await this.actionRequest(requestConfig)
+    async get (requestConfig, responseOptions) {
+        requestConfig.method = 'GET'
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
     /**
      * Calls a POST request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide the data payload to be created} data
-     * @param {Provide extra headers if needed} extraHeaders
-     * @param {Provide maxContentLength if needed} maxContentLength
-     * @param {Provide maxBodyLength if needed} maxBodyLength
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
-    async post (url, data, extraHeaders, maxContentLength, maxBodyLength) {
-        const requestConfig = this.buildAxiosRequestConfig('POST', url, extraHeaders, data)
-
-        if (maxContentLength) {
-            requestConfig.maxContentLength = maxContentLength
-        }
-        if (maxBodyLength) {
-            requestConfig.maxBodyLength = maxBodyLength
-        }
-
-        return await this.actionRequest(requestConfig)
+    async post (requestConfig, responseOptions) {
+        requestConfig.method = 'POST'
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
     /**
      * Calls a PUT request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide the data payload to be updated} data
-     * @param {Provide extra headers if needed} extraHeaders
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
-    async put (url, data, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestConfig('PUT', url, extraHeaders, data)
-        return await this.actionRequest(requestConfig)
+    async put (requestConfig, responseOptions) {
+        requestConfig.method = 'PUT'
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
     /**
      * Calls a `PATCH` request to an API.
      *
-     * @param {Provide the resource URL} url
-     * @param {Provide the data payload to be updated id needed} data
-     * @param {Provide extra headers if needed} extraHeaders
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
      */
-    async patch (url, data, extraHeaders) {
-        const requestConfig = this.buildAxiosRequestConfig('PATCH', url, extraHeaders, data)
-        return await this.actionRequest(requestConfig)
+    async patch (requestConfig, responseOptions) {
+        requestConfig.method = 'PATCH'
+        return await this.actionRequest(requestConfig, responseOptions)
     }
 
-    buildAxiosRequestConfig (method, url, extraHeaders, data = null) {
-        const requestConfig = {
-            method,
-            url,
-            headers: {
-                ...this.baseHeaders,
-                ...extraHeaders
-            }
+    buildApiRequestConfig (url, headers, data) {
+        const requestConfig = { url }
+        if (headers) {
+            requestConfig.headers = headers
         }
         if (data) {
             requestConfig.data = data
@@ -84,12 +66,46 @@ export class ApiService {
         return requestConfig
     }
 
-    async actionRequest (axiosRequestConfig) {
-        return await this.axiosClient(axiosRequestConfig).catch(exception => this.processException(axiosRequestConfig.method, axiosRequestConfig.url, exception))
+    addMaxContentLengthToRequestConfiguration (requestConfiguration, maxContentLength) {
+        if (maxContentLength) {
+            requestConfiguration.maxContentLength = maxContentLength
+        }
+        return requestConfiguration
     }
 
-    processException (httpMethod, url, exception) {
-        this.logApiServiceException(httpMethod, url, exception)
+    addMaxBodyLengthToRequestConfiguration (requestConfiguration, maxBodyLength) {
+        if (maxBodyLength) {
+            requestConfiguration.maxBodyLength = maxBodyLength
+        }
+        return requestConfiguration
+    }
+
+    async actionRequest (requestConfig, responseOptions) {
+        this.validateRequestConfig(requestConfig)
+        return await this.axiosClient(requestConfig)
+            .then(response => this.processResponse(response, responseOptions))
+            .catch(exception => this.processException(exception, requestConfig, responseOptions))
+    }
+
+    validateRequestConfig (requestConfig) {
+        if (!requestConfig) {
+            throw new Error('Request Config required')
+        }
+        if (!requestConfig.method) {
+            throw new Error('Request Config requires a http method')
+        }
+        if (!requestConfig.headers || !requestConfig.headers['Content-Type']) {
+            throw new Error('Request Config requires a content-type header')
+        }
+    }
+
+    processResponse (response, _responseOptions) {
+        // The default is sinmply to return the response, but this way allows us to override this behaviour
+        return response
+    }
+
+    processException (exception, requestConfig, _responseOptions) {
+        this.logApiServiceException(requestConfig.method, requestConfig.url, exception)
         // Because we are throwing another exception here (correct for generic api!?), we will need to use catch everywhere its used
         throw exception
     }
