@@ -6,22 +6,25 @@ import chai from 'chai'
 import sinon from 'sinon'
 import { FoundationsApiService } from '../../api-services/foundations-api.service'
 import { ProtectiveMonitoringService } from '../../services/protective-monitoring.service'
-import { checkForCorrelationIdHeader } from '../helpers'
+import { checkForCorrelationIdHeader, checkLoggedErrorDetails } from '../helpers'
 import nock from 'nock'
 
 const expect = chai.expect
 
 describe('FoundationsApi.Service', function () {
     describe('#get', function () {
+        const getDomain = 'http://test-get.foundationsapiservice.com'
+        const getUri = '/api/1'
+
         describe('no responseOptions', function () {
             it('should return 200 response, correct data, correlation id header', async function () {
-                nock('http://test.foundationsapiservice.com')
-                    .get('/api/1')
+                nock(getDomain)
+                    .get(getUri)
                     .reply(200, { 'test': 'pass' })
 
                 const foundationsApiService = new FoundationsApiService({})
 
-                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
+                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, '12345')
                 const response = await foundationsApiService.get(requestConfiguration)
 
                 checkForCorrelationIdHeader(response, '12345')
@@ -35,8 +38,8 @@ describe('FoundationsApi.Service', function () {
             })
 
             it('should return 400 response, correct data, logged error', async function () {
-                nock('http://test.foundationsapiservice.com')
-                    .get('/api/1')
+                nock(getDomain)
+                    .get(getUri)
                     .reply(400, { 'bad': 'request' })
 
                 let mockedLogger = {
@@ -45,7 +48,7 @@ describe('FoundationsApi.Service', function () {
 
                 const foundationsApiService = new FoundationsApiService(mockedLogger)
 
-                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
+                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
                 const response = await foundationsApiService.get(requestConfiguration)
 
                 expect(response).to.have.property('status')
@@ -57,17 +60,12 @@ describe('FoundationsApi.Service', function () {
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
-
-                expect(loggedError).to.have.property('ApiServiceUrl')
-                expect(loggedError.ApiServiceUrl).to.equal('[GET] http://test.foundationsapiservice.com/api/1')
-
-                expect(loggedError).to.have.property('Exception')
-                expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+                checkLoggedErrorDetails(loggedError, 400, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 400')
             })
 
             it('should return 500 response, correct data, logged error', async function () {
-                nock('http://test.foundationsapiservice.com')
-                    .get('/api/1')
+                nock(getDomain)
+                    .get(getUri)
                     .reply(500, { 'internal': 'server error' })
 
                 let mockedLogger = {
@@ -77,7 +75,7 @@ describe('FoundationsApi.Service', function () {
                 const foundationsApiService = new FoundationsApiService(mockedLogger)
 
                 // Should log error, but not rethrow as the base does
-                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
+                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
                 const response = await foundationsApiService.get(requestConfiguration)
 
                 expect(response).to.have.property('status')
@@ -89,24 +87,19 @@ describe('FoundationsApi.Service', function () {
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
-
-                expect(loggedError).to.have.property('ApiServiceUrl')
-                expect(loggedError.ApiServiceUrl).to.equal('[GET] http://test.foundationsapiservice.com/api/1')
-
-                expect(loggedError).to.have.property('Exception')
-                expect(loggedError.Exception).to.match(/^Error: Request failed with status code 500/)
+                checkLoggedErrorDetails(loggedError, 500, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 500')
             })
         })
 
         describe('with returnDataOnly responseOptions', function () {
             it('should return correct data, no response information', async function () {
-                nock('http://test.foundationsapiservice.com')
-                    .get('/api/1')
+                nock(getDomain)
+                    .get(getUri)
                     .reply(200, { 'test': 'pass' })
 
                 const foundationsApiService = new FoundationsApiService({})
 
-                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
+                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, '12345')
                 const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(true)
                 const result = await foundationsApiService.get(requestConfiguration, responseOptions)
 
@@ -119,8 +112,8 @@ describe('FoundationsApi.Service', function () {
             })
 
             it('should return 400 response, correct data, logged error', async function () {
-                nock('http://test.foundationsapiservice.com')
-                    .get('/api/1')
+                nock(getDomain)
+                    .get(getUri)
                     .reply(400, { 'bad': 'request' })
 
                 let mockedLogger = {
@@ -128,7 +121,7 @@ describe('FoundationsApi.Service', function () {
                 }
 
                 const foundationsApiService = new FoundationsApiService(mockedLogger)
-                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, true)
+                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, true)
                 const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(true)
                 const response = await foundationsApiService.get(requestConfiguration, responseOptions)
 
@@ -141,19 +134,14 @@ describe('FoundationsApi.Service', function () {
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
-
-                expect(loggedError).to.have.property('ApiServiceUrl')
-                expect(loggedError.ApiServiceUrl).to.equal('[GET] http://test.foundationsapiservice.com/api/1')
-
-                expect(loggedError).to.have.property('Exception')
-                expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+                checkLoggedErrorDetails(loggedError, 400, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 400')
             })
         })
 
         describe('with protectiveMonitoring responseOptions', function () {
             it('should return 200 response, correct data, correlation id header, protective monitor successful event', async function () {
-                nock('http://test.foundationsapiservice.com')
-                    .get('/api/1')
+                nock(getDomain)
+                    .get(getUri)
                     .reply(200, { 'test': 'pass' })
 
                 const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
@@ -168,7 +156,7 @@ describe('FoundationsApi.Service', function () {
                 const protectiveMonitoringService = new ProtectiveMonitoringService(mockedLog4js)
                 const foundationsApiService = new FoundationsApiService({}, protectiveMonitoringService)
 
-                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1', null, null, '12345')
+                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, '12345')
 
                 const successfulMonitoringOptions = protectiveMonitoringService.buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
                 const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', successfulMonitoringOptions)
@@ -200,8 +188,8 @@ describe('FoundationsApi.Service', function () {
             })
 
             it('should return 400 response, correct data, logged error, protective monitor exception event', async function () {
-                nock('http://test.foundationsapiservice.com')
-                    .get('/api/1')
+                nock(getDomain)
+                    .get(getUri)
                     .reply(400, { 'bad': 'request' })
 
                 let mockedLogger = {
@@ -222,7 +210,7 @@ describe('FoundationsApi.Service', function () {
 
                 const foundationsApiService = new FoundationsApiService(mockedLogger, protectiveMonitoringService)
 
-                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig('http://test.foundationsapiservice.com/api/1')
+                const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
 
                 const foundationsApiProtectiveMonitoring = foundationsApiService.buildFoundationsApiProtectiveMonitoring('test', null, exceptionMonitoringOptions)
                 const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
@@ -238,12 +226,7 @@ describe('FoundationsApi.Service', function () {
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
-
-                expect(loggedError).to.have.property('ApiServiceUrl')
-                expect(loggedError.ApiServiceUrl).to.equal('[GET] http://test.foundationsapiservice.com/api/1')
-
-                expect(loggedError).to.have.property('Exception')
-                expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+                checkLoggedErrorDetails(loggedError, 400, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 400')
 
                 expect(mockedPmLogger.info.calledOnce).to.be.false
                 expect(mockedPmLogger.error.calledOnce).to.be.true
@@ -262,14 +245,17 @@ describe('FoundationsApi.Service', function () {
     })
 
     describe('#health ping', function () {
+        const pingDomain = 'http://test-ping.foundationsapiservice.com'
+        const pingUri = '/health/ping'
+
         it('should return 200 response, correct data, correlation id header', async function () {
-            nock('http://test.foundationsapiservice.com')
-                .get('/health/ping')
+            nock(pingDomain)
+                .get(pingUri)
                 .reply(200, { 'test': 'pass' })
 
             const foundationsApiService = new FoundationsApiService({})
 
-            const response = await foundationsApiService.healthPing('http://test.foundationsapiservice.com', '12345')
+            const response = await foundationsApiService.healthPing(pingDomain, '12345')
 
             checkForCorrelationIdHeader(response, '12345')
 
@@ -282,8 +268,8 @@ describe('FoundationsApi.Service', function () {
         })
 
         it('should return 400 response, correct data, logged error', async function () {
-            nock('http://test.foundationsapiservice.com')
-                .get('/health/ping')
+            nock(pingDomain)
+                .get(pingUri)
                 .reply(400, { 'bad': 'request' })
 
             let mockedLogger = {
@@ -292,7 +278,7 @@ describe('FoundationsApi.Service', function () {
 
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
-            const response = await foundationsApiService.healthPing('http://test.foundationsapiservice.com')
+            const response = await foundationsApiService.healthPing(pingDomain)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(400)
@@ -303,17 +289,12 @@ describe('FoundationsApi.Service', function () {
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
-
-            expect(loggedError).to.have.property('ApiServiceUrl')
-            expect(loggedError.ApiServiceUrl).to.equal('[GET] http://test.foundationsapiservice.com/health/ping')
-
-            expect(loggedError).to.have.property('Exception')
-            expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+            checkLoggedErrorDetails(loggedError, 400, `[GET] ${pingDomain}${pingUri}`, 'Error: Request failed with status code 400')
         })
 
         it('should return 500 response, correct data, logged error', async function () {
-            nock('http://test.foundationsapiservice.com')
-                .get('/health/ping')
+            nock(pingDomain)
+                .get(pingUri)
                 .reply(500, { 'internal': 'server error' })
 
             let mockedLogger = {
@@ -323,7 +304,7 @@ describe('FoundationsApi.Service', function () {
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
             // Should log error, but not rethrow as the base does
-            const response = await foundationsApiService.healthPing('http://test.foundationsapiservice.com')
+            const response = await foundationsApiService.healthPing(pingDomain)
 
             expect(response).to.have.property('status')
             expect(response.status).to.equal(500)
@@ -335,11 +316,7 @@ describe('FoundationsApi.Service', function () {
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
 
-            expect(loggedError).to.have.property('ApiServiceUrl')
-            expect(loggedError.ApiServiceUrl).to.equal('[GET] http://test.foundationsapiservice.com/health/ping')
-
-            expect(loggedError).to.have.property('Exception')
-            expect(loggedError.Exception).to.match(/^Error: Request failed with status code 500/)
+            checkLoggedErrorDetails(loggedError, 500, `[GET] ${pingDomain}${pingUri}`, 'Error: Request failed with status code 500')
         })
     })
 })

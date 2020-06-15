@@ -20,7 +20,21 @@ async function expectThrowsAsync (method, errorMessage) {
     }
 }
 
+function checkLoggedErrorDetails (loggedError, expectedStatus, expectedApiServiceUrl, expectedExceptionStartsWith) {
+    expect(loggedError).to.have.property('ErrorStatus')
+    expect(loggedError.ErrorStatus).to.equal(expectedStatus)
+
+    expect(loggedError).to.have.property('ApiServiceUrl')
+    expect(loggedError.ApiServiceUrl).to.equal(expectedApiServiceUrl)
+
+    expect(loggedError).to.have.property('Exception')
+
+    const errorMessageStartsWithReqEx = new RegExp(`^${expectedExceptionStartsWith}`)
+    expect(loggedError.Exception).to.match(errorMessageStartsWithReqEx)
+}
+
 module.exports = {
     checkForCorrelationIdHeader,
-    expectThrowsAsync
+    expectThrowsAsync,
+    checkLoggedErrorDetails
 }
