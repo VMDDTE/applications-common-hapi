@@ -66,6 +66,42 @@ function buildFoundationsApiRequestConfig (url, headers, data, originatingReques
     return requestConfiguration
 }
 
+function buildFoundationsApiProtectiveMonitoring (environment, successfulMonitoringOptions, exceptionMonitoringOptions) {
+    if (!environment) {
+        throw new Error('Environment is required')
+    }
+
+    if (!successfulMonitoringOptions && !exceptionMonitoringOptions) {
+        throw new Error('Either success or exception monintoring options are required')
+    }
+
+    return {
+        environment,
+        successfulMonitoringOptions,
+        exceptionMonitoringOptions
+    }
+}
+
+function buildFoundationsApiResponseOptions (returnDataOnly, protectiveMonitoring) {
+    if (!returnDataOnly && !protectiveMonitoring) {
+        throw new Error('buildFoundationsApiResponseOptions requires params')
+    }
+
+    const responseOptions = { }
+
+    if (returnDataOnly) {
+        if (returnDataOnly !== true && returnDataOnly !== false) {
+            throw new Error(`returnDataOnly is expected to be a boolean, but received '${returnDataOnly}'`)
+        }
+        responseOptions.returnDataOnly = returnDataOnly
+    }
+    // Could validate protectiveMonitoring
+    if (protectiveMonitoring) {
+        responseOptions.protectiveMonitoring = protectiveMonitoring
+    }
+    return responseOptions
+}
+
 function validateApiRequestConfig (requestConfiguration) {
     checkForRequestConfiguration(requestConfiguration)
 
@@ -85,7 +121,10 @@ module.exports = {
     addMaxBodyLengthToRequestConfiguration,
 
     buildApiRequestConfig,
+
     buildFoundationsApiRequestConfig,
+    buildFoundationsApiProtectiveMonitoring,
+    buildFoundationsApiResponseOptions,
 
     validateApiRequestConfig
 }

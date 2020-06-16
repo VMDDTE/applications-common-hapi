@@ -5,7 +5,8 @@ import chai from 'chai'
 import { expectThrowsAsync } from '../helpers'
 import {
     addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration, validateApiRequestConfig,
-    buildApiRequestConfig, buildFoundationsApiRequestConfig } from '../../api-services/helpers'
+    buildApiRequestConfig, buildFoundationsApiRequestConfig,
+    buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions } from '../../api-services/helpers'
 
 const expect = chai.expect
 
@@ -163,6 +164,54 @@ describe('Api.Service Helpers', function () {
 
             expect(requestConfig).to.have.property('data')
             expect(requestConfig.data).to.equal(data)
+        })
+    })
+
+    describe('#buildFoundationsApiProtectiveMonitoring', function () {
+        it('should return correct result', async function () {
+            const environment = 'testEnvironment'
+            const successfulMonitoringOptions = { 'success': 'successfulMonitoringOptions' }
+            const exceptionMonitoringOptions = { 'exception': 'exceptionMonitoringOptions' }
+            const protectiveMonitoring = buildFoundationsApiProtectiveMonitoring(environment, successfulMonitoringOptions, exceptionMonitoringOptions)
+
+            expect(protectiveMonitoring).to.have.property('environment')
+            expect(protectiveMonitoring.environment).to.equal(environment)
+
+            expect(protectiveMonitoring).to.have.property('successfulMonitoringOptions')
+            expect(protectiveMonitoring.successfulMonitoringOptions).to.equal(successfulMonitoringOptions)
+
+            expect(protectiveMonitoring).to.have.property('exceptionMonitoringOptions')
+            expect(protectiveMonitoring.exceptionMonitoringOptions).to.equal(exceptionMonitoringOptions)
+        })
+
+        it('should throw error when no environment provided', async function () {
+            await expectThrowsAsync(() => buildFoundationsApiProtectiveMonitoring(), 'Environment is required')
+        })
+
+        it('should throw error when no monitoring options provided', async function () {
+            await expectThrowsAsync(() => buildFoundationsApiProtectiveMonitoring('testEnvironment'), 'Either success or exception monintoring options are required')
+        })
+    })
+
+    describe('#buildFoundationsApiResponseOptions', function () {
+        it('should return correct result', async function () {
+            const returnDataOnly = true
+            const protectiveMonitoring = { 'pm': 'protectiveMonitoringOptions' }
+            const foundationsApiResponseOptions = buildFoundationsApiResponseOptions(returnDataOnly, protectiveMonitoring)
+
+            expect(foundationsApiResponseOptions).to.have.property('returnDataOnly')
+            expect(foundationsApiResponseOptions.returnDataOnly).to.equal(returnDataOnly)
+
+            expect(foundationsApiResponseOptions).to.have.property('protectiveMonitoring')
+            expect(foundationsApiResponseOptions.protectiveMonitoring).to.equal(protectiveMonitoring)
+        })
+
+        it('should return correct empty result', async function () {
+            await expectThrowsAsync(() => buildFoundationsApiResponseOptions(), 'buildFoundationsApiResponseOptions requires params')
+        })
+
+        it('should throw error when non boolean value passed for returnDataOnly', async function () {
+            await expectThrowsAsync(() => buildFoundationsApiResponseOptions('nonBoolean'), 'returnDataOnly is expected to be a boolean, but received \'nonBoolean\'')
         })
     })
 })

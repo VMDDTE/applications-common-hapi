@@ -10,18 +10,6 @@ export class FoundationsApiService extends ApiService {
     }
 
     /**
-     * Calls a GET request to an API.
-     *
-     * @param {Provide the resource URL} url
-     * @param {Provide originating Request Id if needed for use as correlation id} originatingRequestId
-     * @param {Provide extra headers if needed} extraHeaders
-     * @param {Indicate if whole response should be returned} returnDataOnly
-     */
-    async get (foundationApiRequestConfig, foundationsApiResponseOptions) {
-        return await super.get(foundationApiRequestConfig, foundationsApiResponseOptions)
-    }
-
-    /**
      * Calls base service ping `GET` request to an API.
      *
      * @param {Provide the base service URL} url
@@ -29,26 +17,6 @@ export class FoundationsApiService extends ApiService {
     async healthPing (baseServiceUrl, originatingRequestId) {
         const url = `${baseServiceUrl}/health/ping`
         return await super.get(buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
-    }
-
-    buildFoundationsApiResponseOptions (returnDataOnly, protectiveMonitoring) {
-        const responseOptions = { }
-
-        if (returnDataOnly) {
-            responseOptions.returnDataOnly = returnDataOnly
-        }
-        if (protectiveMonitoring) {
-            responseOptions.protectiveMonitoring = protectiveMonitoring
-        }
-        return responseOptions
-    }
-
-    buildFoundationsApiProtectiveMonitoring (environment, successfulMonitoringOptions, exceptionMonitoringOptions) {
-        return {
-            environment,
-            successfulMonitoringOptions,
-            exceptionMonitoringOptions
-        }
     }
 
     // Successful response processing
