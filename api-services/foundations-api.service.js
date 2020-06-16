@@ -1,5 +1,6 @@
 import { ApiService } from './api.service'
-import HttpHeaders from '../enums/http-headers.enum'
+import { buildFoundationsApiRequestConfig } from './helpers'
+// import HttpHeaders from '../enums/http-headers.enum'
 
 export class FoundationsApiService extends ApiService {
     constructor (logger, protectiveMonitoringService) {
@@ -28,27 +29,7 @@ export class FoundationsApiService extends ApiService {
      */
     async healthPing (baseServiceUrl, originatingRequestId) {
         const url = `${baseServiceUrl}/health/ping`
-        return await super.get(this.buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
-    }
-
-    buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
-        const requestConfiguration = this.buildApiRequestConfig(url, headers, data)
-
-        let requestConfigurationHeaders = requestConfiguration.headers
-        if (!requestConfigurationHeaders || !requestConfigurationHeaders['Content-Type']) {
-            // No content type, default to json
-            requestConfigurationHeaders = requestConfigurationHeaders || {}
-            requestConfigurationHeaders['Content-Type'] = 'application/json'
-        }
-
-        if (originatingRequestId) {
-            requestConfigurationHeaders = requestConfigurationHeaders || {}
-            requestConfigurationHeaders[HttpHeaders.CORRELATION_ID] = originatingRequestId
-        }
-
-        requestConfiguration.headers = requestConfigurationHeaders
-
-        return requestConfiguration
+        return await super.get(buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
     }
 
     buildFoundationsApiResponseOptions (returnDataOnly, protectiveMonitoring) {
@@ -124,14 +105,18 @@ export class FoundationsApiService extends ApiService {
     }
 
     protectivelyMonitorSuccessfulEvent (environment, successfulMonitoringOptions, response) {
-        if (this.protectiveMonitoringService) {
-            this.protectiveMonitoringService.monitorEventInformation(environment, successfulMonitoringOptions)
+        if (!this.protectiveMonitoringService) {
+            throw new Error('protectivelyMonitorSuccessfulEvent requires a protectiveMonitoringService')
         }
+
+        this.protectiveMonitoringService.monitorEventInformation(environment, successfulMonitoringOptions)
     }
 
     protectivelyMonitorExceptionEvent (environment, exceptionMonitoringOptions, exception) {
-        if (this.protectiveMonitoringService) {
-            this.protectiveMonitoringService.monitorEventError(environment, exceptionMonitoringOptions)
+        if (!this.protectiveMonitoringService) {
+            throw new Error('protectivelyMonitorExceptionEvent requires a protectiveMonitoringService')
         }
+
+        this.protectiveMonitoringService.monitorEventError(environment, exceptionMonitoringOptions)
     }
 }

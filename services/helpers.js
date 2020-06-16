@@ -16,6 +16,18 @@ function checkForLog4jsProtectiveMonitoring (log4js, serviceName) {
     return log4jsLogger
 }
 
+function buildProtectiveMonitoringOptions (auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority) {
+    return {
+        auditCode,
+        auditDescription,
+        pmcDetails,
+        pmcType,
+        pmcCode,
+        priority
+    }
+}
+
 module.exports = {
-    checkForLog4jsProtectiveMonitoring
+    checkForLog4jsProtectiveMonitoring,
+    buildProtectiveMonitoringOptions
 }

@@ -1,5 +1,6 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
+import { validateApiRequestConfig } from './helpers'
 
 export class ApiService {
     constructor (logger) {
@@ -55,48 +56,11 @@ export class ApiService {
         return await this.actionRequest(requestConfig, responseOptions)
     }
 
-    buildApiRequestConfig (url, headers, data) {
-        const requestConfig = { url }
-        if (headers) {
-            requestConfig.headers = headers
-        }
-        if (data) {
-            requestConfig.data = data
-        }
-        return requestConfig
-    }
-
-    addMaxContentLengthToRequestConfiguration (requestConfiguration, maxContentLength) {
-        if (maxContentLength) {
-            requestConfiguration.maxContentLength = maxContentLength
-        }
-        return requestConfiguration
-    }
-
-    addMaxBodyLengthToRequestConfiguration (requestConfiguration, maxBodyLength) {
-        if (maxBodyLength) {
-            requestConfiguration.maxBodyLength = maxBodyLength
-        }
-        return requestConfiguration
-    }
-
     async actionRequest (requestConfig, responseOptions) {
-        this.validateRequestConfig(requestConfig)
+        validateApiRequestConfig(requestConfig)
         return await this.axiosClient(requestConfig)
             .then(response => this.processResponse(response, responseOptions))
             .catch(exception => this.processException(exception, requestConfig, responseOptions))
-    }
-
-    validateRequestConfig (requestConfig) {
-        if (!requestConfig) {
-            throw new Error('Request Config required')
-        }
-        if (!requestConfig.method) {
-            throw new Error('Request Config requires a http method')
-        }
-        if (!requestConfig.headers || !requestConfig.headers['Content-Type']) {
-            throw new Error('Request Config requires a content-type header')
-        }
     }
 
     processResponse (response, _responseOptions) {

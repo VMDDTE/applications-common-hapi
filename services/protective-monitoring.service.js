@@ -5,17 +5,6 @@ export class ProtectiveMonitoringService {
         this.log4jsLogger = checkForLog4jsProtectiveMonitoring(log4js, 'ProtectiveMonitoringService')
     }
 
-    buildProtectiveMonitoringOptions (auditCode, auditDescription, pmcDetails, pmcType, pmcCode, priority) {
-        return {
-            auditCode,
-            auditDescription,
-            pmcDetails,
-            pmcType,
-            pmcCode,
-            priority
-        }
-    }
-
     monitorEventInformation (environment, monitoringOptions) {
         const message = buildProtectiveMonitorMessage(environment, monitoringOptions)
         this.logMessage(true, message)

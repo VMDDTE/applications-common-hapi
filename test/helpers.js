@@ -1,10 +1,27 @@
 import chai from 'chai'
 const expect = chai.expect
 
-function checkForCorrelationIdHeader (response, expectedCorrelationId) {
+function checkResponseForRequestHeaders (response) {
     expect(response).to.have.nested.property('config.headers')
-    expect(response.config.headers).to.have.property('X-VMD-Request-Id')
-    expect(response.config.headers['X-VMD-Request-Id']).to.equal(expectedCorrelationId)
+    return response.config.headers
+}
+
+function checkForCorrelationIdHeader (response, expectedCorrelationId) {
+    const headers = checkResponseForRequestHeaders(response)
+    expect(headers).to.have.property('X-VMD-Request-Id')
+    expect(headers['X-VMD-Request-Id']).to.equal(expectedCorrelationId)
+}
+
+function checkResponseForRequestData (response) {
+    expect(response).to.have.nested.property('config.data')
+    return response.config.data
+}
+
+function checkRequestData (response, expectedPropertyName, expectedPropertyValue) {
+    const data = checkResponseForRequestData(response)
+    const parsedData = JSON.parse(data)
+    expect(parsedData).to.have.property(expectedPropertyName)
+    expect(parsedData[expectedPropertyName]).to.equal(expectedPropertyValue)
 }
 
 async function expectThrowsAsync (method, errorMessage) {
@@ -57,6 +74,9 @@ function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, a
 
 module.exports = {
     checkForCorrelationIdHeader,
+    checkResponseForRequestData,
+    checkRequestData,
+
     expectThrowsAsync,
 
     checkResponseStatusCode,
