@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-new */
-
 import { describe, it } from 'mocha'
 import chai from 'chai'
 import nock from 'nock'
 import sinon from 'sinon'
-import { expectThrowsAsync, checkLoggedErrorDetails } from '../helpers'
+import { expectThrowsAsync, checkResponseStatusCode, checkResponseData, checkLoggedErrorDetails } from '../helpers'
 import { ApiService } from '../../api-services/api.service'
 
 const expect = chai.expect
@@ -34,12 +33,9 @@ describe('Api.Service', function () {
             const requestConfiguration = apiService.buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             const response = await apiService.get(requestConfiguration)
 
-            expect(response).to.have.property('status')
-            expect(response.status).to.equal(200)
+            checkResponseStatusCode(response, 200)
 
-            expect(response).to.have.property('data')
-            expect(response.data).to.have.property('test')
-            expect(response.data.test).to.equal('pass')
+            checkResponseData(response, 'test', 'pass')
         })
 
         it('should return 400 with correct data', async function () {
@@ -75,7 +71,6 @@ describe('Api.Service', function () {
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
-
             checkLoggedErrorDetails(loggedError, 500, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 500')
         })
 
@@ -107,12 +102,9 @@ describe('Api.Service', function () {
             const requestConfiguration = apiService.buildApiRequestConfig(`${postDomain}${postUri}`, { 'Content-Type': 'application/test' })
             const response = await apiService.post(requestConfiguration)
 
-            expect(response).to.have.property('status')
-            expect(response.status).to.equal(200)
+            checkResponseStatusCode(response, 200)
 
-            expect(response).to.have.property('data')
-            expect(response.data).to.have.property('test')
-            expect(response.data.test).to.equal('pass')
+            checkResponseData(response, 'test', 'pass')
         })
 
         it('should return 400 with correct data', async function () {
@@ -130,15 +122,7 @@ describe('Api.Service', function () {
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
-
-            expect(loggedError).to.have.property('ErrorStatus')
-            expect(loggedError.ErrorStatus).to.equal(400)
-
-            expect(loggedError).to.have.property('ApiServiceUrl')
-            expect(loggedError.ApiServiceUrl).to.equal(`[POST] ${postDomain}${postUri}`)
-
-            expect(loggedError).to.have.property('Exception')
-            expect(loggedError.Exception).to.match(/^Error: Request failed with status code 400/)
+            checkLoggedErrorDetails(loggedError, 400, `[POST] ${postDomain}${postUri}`, 'Error: Request failed with status code 400')
         })
 
         it('should log error with correct message and rethrow error', async function () {
@@ -187,12 +171,9 @@ describe('Api.Service', function () {
             const requestConfiguration = apiService.buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
             const response = await apiService.put(requestConfiguration)
 
-            expect(response).to.have.property('status')
-            expect(response.status).to.equal(200)
+            checkResponseStatusCode(response, 200)
 
-            expect(response).to.have.property('data')
-            expect(response.data).to.have.property('test')
-            expect(response.data.test).to.equal('pass')
+            checkResponseData(response, 'test', 'pass')
         })
 
         it('should return 400 with correct data', async function () {
@@ -259,12 +240,9 @@ describe('Api.Service', function () {
             const requestConfiguration = apiService.buildApiRequestConfig(`${patchDomain}${patchUri}`, { 'Content-Type': 'application/test' })
             const response = await apiService.patch(requestConfiguration)
 
-            expect(response).to.have.property('status')
-            expect(response.status).to.equal(200)
+            checkResponseStatusCode(response, 200)
 
-            expect(response).to.have.property('data')
-            expect(response.data).to.have.property('test')
-            expect(response.data.test).to.equal('pass')
+            checkResponseData(response, 'test', 'pass')
         })
 
         it('should return 400 with correct data', async function () {

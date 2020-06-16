@@ -20,6 +20,17 @@ async function expectThrowsAsync (method, errorMessage) {
     }
 }
 
+function checkResponseStatusCode (response, expectedCode) {
+    expect(response).to.have.property('status')
+    expect(response.status).to.equal(expectedCode)
+}
+
+function checkResponseData (response, expectedPropertyName, expectedPropertyValue) {
+    expect(response).to.have.property('data')
+    expect(response.data).to.have.property(expectedPropertyName)
+    expect(response.data[expectedPropertyName]).to.equal(expectedPropertyValue)
+}
+
 function checkLoggedErrorDetails (loggedError, expectedStatus, expectedApiServiceUrl, expectedExceptionStartsWith) {
     expect(loggedError).to.have.property('ErrorStatus')
     expect(loggedError.ErrorStatus).to.equal(expectedStatus)
@@ -33,8 +44,23 @@ function checkLoggedErrorDetails (loggedError, expectedStatus, expectedApiServic
     expect(loggedError.Exception).to.match(errorMessageStartsWithReqEx)
 }
 
+function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, auditCode, auditDescription) {
+    expect(loggedPmMessage).to.have.property('Environment')
+    expect(loggedPmMessage.Environment).to.equal(environment)
+
+    expect(loggedPmMessage).to.have.property('AuditCode')
+    expect(loggedPmMessage.AuditCode).to.equal(auditCode)
+
+    expect(loggedPmMessage).to.have.property('AuditDescription')
+    expect(loggedPmMessage.AuditDescription).to.equal(auditDescription)
+}
+
 module.exports = {
     checkForCorrelationIdHeader,
     expectThrowsAsync,
-    checkLoggedErrorDetails
+
+    checkResponseStatusCode,
+    checkResponseData,
+    checkLoggedErrorDetails,
+    checkLoggedProtectiveMonitoringDetails
 }

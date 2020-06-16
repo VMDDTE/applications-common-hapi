@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-new */
-
 import { describe, it } from 'mocha'
 import chai from 'chai'
 import sinon from 'sinon'
 import { FoundationsApiService } from '../../api-services/foundations-api.service'
 import { ProtectiveMonitoringService } from '../../services/protective-monitoring.service'
-import { checkForCorrelationIdHeader, checkLoggedErrorDetails } from '../helpers'
+import { checkForCorrelationIdHeader, checkResponseStatusCode, checkResponseData, checkLoggedErrorDetails, checkLoggedProtectiveMonitoringDetails } from '../helpers'
 import nock from 'nock'
 
 const expect = chai.expect
@@ -29,12 +28,9 @@ describe('FoundationsApi.Service', function () {
 
                 checkForCorrelationIdHeader(response, '12345')
 
-                expect(response).to.have.property('status')
-                expect(response.status).to.equal(200)
+                checkResponseStatusCode(response, 200)
 
-                expect(response).to.have.property('data')
-                expect(response.data).to.have.property('test')
-                expect(response.data.test).to.equal('pass')
+                checkResponseData(response, 'test', 'pass')
             })
 
             it('should return 400 response, correct data, logged error', async function () {
@@ -51,12 +47,9 @@ describe('FoundationsApi.Service', function () {
                 const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
                 const response = await foundationsApiService.get(requestConfiguration)
 
-                expect(response).to.have.property('status')
-                expect(response.status).to.equal(400)
+                checkResponseStatusCode(response, 400)
 
-                expect(response).to.have.property('data')
-                expect(response.data).to.have.property('bad')
-                expect(response.data.bad).to.equal('request')
+                checkResponseData(response, 'bad', 'request')
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
@@ -78,12 +71,9 @@ describe('FoundationsApi.Service', function () {
                 const requestConfiguration = foundationsApiService.buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
                 const response = await foundationsApiService.get(requestConfiguration)
 
-                expect(response).to.have.property('status')
-                expect(response.status).to.equal(500)
+                checkResponseStatusCode(response, 500)
 
-                expect(response).to.have.property('data')
-                expect(response.data).to.have.property('internal')
-                expect(response.data.internal).to.equal('server error')
+                checkResponseData(response, 'internal', 'server error')
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
@@ -125,12 +115,9 @@ describe('FoundationsApi.Service', function () {
                 const responseOptions = foundationsApiService.buildFoundationsApiResponseOptions(true)
                 const response = await foundationsApiService.get(requestConfiguration, responseOptions)
 
-                expect(response).to.have.property('status')
-                expect(response.status).to.equal(400)
+                checkResponseStatusCode(response, 400)
 
-                expect(response).to.have.property('data')
-                expect(response.data).to.have.property('bad')
-                expect(response.data.bad).to.equal('request')
+                checkResponseData(response, 'bad', 'request')
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
@@ -166,25 +153,20 @@ describe('FoundationsApi.Service', function () {
 
                 checkForCorrelationIdHeader(response, '12345')
 
-                expect(response).to.have.property('status')
-                expect(response.status).to.equal(200)
+                checkResponseStatusCode(response, 200)
 
-                expect(response).to.have.property('data')
-                expect(response.data).to.have.property('test')
-                expect(response.data.test).to.equal('pass')
+                checkResponseData(response, 'test', 'pass')
 
                 expect(mockedPmLogger.info.calledOnce).to.be.true
                 expect(mockedPmLogger.error.calledOnce).to.be.false
                 const loggedPmInfoMessage = JSON.parse(mockedPmLogger.info.firstCall.args[0])
 
-                expect(loggedPmInfoMessage).to.have.property('Environment')
-                expect(loggedPmInfoMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
-
-                expect(loggedPmInfoMessage).to.have.property('AuditCode')
-                expect(loggedPmInfoMessage.AuditCode).to.equal(successfulMonitoringOptions.auditCode)
-
-                expect(loggedPmInfoMessage).to.have.property('AuditDescription')
-                expect(loggedPmInfoMessage.AuditDescription).to.equal(successfulMonitoringOptions.auditDescription)
+                checkLoggedProtectiveMonitoringDetails(
+                    loggedPmInfoMessage,
+                    foundationsApiProtectiveMonitoring.environment,
+                    successfulMonitoringOptions.auditCode,
+                    successfulMonitoringOptions.auditDescription
+                )
             })
 
             it('should return 400 response, correct data, logged error, protective monitor exception event', async function () {
@@ -217,12 +199,9 @@ describe('FoundationsApi.Service', function () {
 
                 const response = await foundationsApiService.get(requestConfiguration, responseOptions)
 
-                expect(response).to.have.property('status')
-                expect(response.status).to.equal(400)
+                checkResponseStatusCode(response, 400)
 
-                expect(response).to.have.property('data')
-                expect(response.data).to.have.property('bad')
-                expect(response.data.bad).to.equal('request')
+                checkResponseData(response, 'bad', 'request')
 
                 expect(mockedLogger.error.calledOnce).to.be.true
                 const loggedError = mockedLogger.error.firstCall.args[0]
@@ -232,14 +211,12 @@ describe('FoundationsApi.Service', function () {
                 expect(mockedPmLogger.error.calledOnce).to.be.true
                 const loggedPmErrorMessage = JSON.parse(mockedPmLogger.error.firstCall.args[0])
 
-                expect(loggedPmErrorMessage).to.have.property('Environment')
-                expect(loggedPmErrorMessage.Environment).to.equal(foundationsApiProtectiveMonitoring.environment)
-
-                expect(loggedPmErrorMessage).to.have.property('AuditCode')
-                expect(loggedPmErrorMessage.AuditCode).to.equal(exceptionMonitoringOptions.auditCode)
-
-                expect(loggedPmErrorMessage).to.have.property('AuditDescription')
-                expect(loggedPmErrorMessage.AuditDescription).to.equal(exceptionMonitoringOptions.auditDescription)
+                checkLoggedProtectiveMonitoringDetails(
+                    loggedPmErrorMessage,
+                    foundationsApiProtectiveMonitoring.environment,
+                    exceptionMonitoringOptions.auditCode,
+                    exceptionMonitoringOptions.auditDescription
+                )
             })
         })
     })
@@ -259,12 +236,9 @@ describe('FoundationsApi.Service', function () {
 
             checkForCorrelationIdHeader(response, '12345')
 
-            expect(response).to.have.property('status')
-            expect(response.status).to.equal(200)
+            checkResponseStatusCode(response, 200)
 
-            expect(response).to.have.property('data')
-            expect(response.data).to.have.property('test')
-            expect(response.data.test).to.equal('pass')
+            checkResponseData(response, 'test', 'pass')
         })
 
         it('should return 400 response, correct data, logged error', async function () {
@@ -280,12 +254,9 @@ describe('FoundationsApi.Service', function () {
 
             const response = await foundationsApiService.healthPing(pingDomain)
 
-            expect(response).to.have.property('status')
-            expect(response.status).to.equal(400)
+            checkResponseStatusCode(response, 400)
 
-            expect(response).to.have.property('data')
-            expect(response.data).to.have.property('bad')
-            expect(response.data.bad).to.equal('request')
+            checkResponseData(response, 'bad', 'request')
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
@@ -306,12 +277,9 @@ describe('FoundationsApi.Service', function () {
             // Should log error, but not rethrow as the base does
             const response = await foundationsApiService.healthPing(pingDomain)
 
-            expect(response).to.have.property('status')
-            expect(response.status).to.equal(500)
+            checkResponseStatusCode(response, 500)
 
-            expect(response).to.have.property('data')
-            expect(response.data).to.have.property('internal')
-            expect(response.data.internal).to.equal('server error')
+            checkResponseData(response, 'internal', 'server error')
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
