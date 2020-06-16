@@ -72,7 +72,7 @@ function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, a
     expect(loggedPmMessage.AuditDescription).to.equal(auditDescription)
 }
 
-module.exports = {
+export {
     checkForCorrelationIdHeader,
     checkResponseForRequestData,
     checkRequestData,
