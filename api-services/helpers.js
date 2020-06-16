@@ -114,7 +114,7 @@ function validateApiRequestConfig (requestConfiguration) {
     }
 }
 
-module.exports = {
+export {
     checkForRequestConfiguration,
 
     addMaxContentLengthToRequestConfiguration,

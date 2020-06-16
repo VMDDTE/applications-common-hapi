@@ -27,7 +27,7 @@ function buildProtectiveMonitoringOptions (auditCode, auditDescription, pmcDetai
     }
 }
 
-module.exports = {
+export {
     checkForLog4jsProtectiveMonitoring,
     buildProtectiveMonitoringOptions
 }

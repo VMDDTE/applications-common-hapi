@@ -2,9 +2,7 @@ import { AuditCodeEnum, PmcCodeEnum, PriorityEnum } from './enums/protective-mon
 import { ApiService } from './api-services/api.service'
 import { FoundationsApiService } from './api-services/foundations-api.service'
 import { ProtectiveMonitoringService } from './services/protective-monitoring.service'
-import { 
-    buildFoundationsApiRequestConfig, buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions,
-    validateApiRequestConfig } from './api-services/helpers'
+import { buildFoundationsApiRequestConfig, buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
 
 export {
@@ -18,7 +16,6 @@ export {
     buildFoundationsApiRequestConfig,
     buildFoundationsApiProtectiveMonitoring,
     buildFoundationsApiResponseOptions,
-    validateApiRequestConfig,
 
     ProtectiveMonitoringService,
     buildProtectiveMonitoringOptions
