@@ -1,4 +1,4 @@
-export default {
+const HttpHeadersEnum = {
     CORRELATION_ID: 'X-VMD-Request-Id',
 
     ORGANISATION_REFERENCE: 'vmd-orgref',
@@ -10,4 +10,8 @@ export default {
     // HEADER_VALUE_EXPECT_CT: 'max-age=86400;enforce',
     // HEADER_VALUE_PERMITTED_CROSS_DOMAIN_POLICIES: 'none',
 
+}
+
+export {
+    HttpHeadersEnum
 }

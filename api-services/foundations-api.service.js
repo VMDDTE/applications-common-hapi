@@ -1,5 +1,5 @@
 import { ApiService } from './api.service'
-import HttpHeaders from '../enums/http-headers.enum'
+import { buildFoundationsApiRequestConfig } from './helpers'
 
 export class FoundationsApiService extends ApiService {
     constructor (logger, protectiveMonitoringService) {
@@ -10,65 +10,13 @@ export class FoundationsApiService extends ApiService {
     }
 
     /**
-     * Calls a GET request to an API.
-     *
-     * @param {Provide the resource URL} url
-     * @param {Provide originating Request Id if needed for use as correlation id} originatingRequestId
-     * @param {Provide extra headers if needed} extraHeaders
-     * @param {Indicate if whole response should be returned} returnDataOnly
-     */
-    async get (foundationApiRequestConfig, foundationsApiResponseOptions) {
-        return await super.get(foundationApiRequestConfig, foundationsApiResponseOptions)
-    }
-
-    /**
      * Calls base service ping `GET` request to an API.
      *
      * @param {Provide the base service URL} url
      */
     async healthPing (baseServiceUrl, originatingRequestId) {
         const url = `${baseServiceUrl}/health/ping`
-        return await super.get(this.buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
-    }
-
-    buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
-        const requestConfiguration = this.buildApiRequestConfig(url, headers, data)
-
-        let requestConfigurationHeaders = requestConfiguration.headers
-        if (!requestConfigurationHeaders || !requestConfigurationHeaders['Content-Type']) {
-            // No content type, default to json
-            requestConfigurationHeaders = requestConfigurationHeaders || {}
-            requestConfigurationHeaders['Content-Type'] = 'application/json'
-        }
-
-        if (originatingRequestId) {
-            requestConfigurationHeaders = requestConfigurationHeaders || {}
-            requestConfigurationHeaders[HttpHeaders.CORRELATION_ID] = originatingRequestId
-        }
-
-        requestConfiguration.headers = requestConfigurationHeaders
-
-        return requestConfiguration
-    }
-
-    buildFoundationsApiResponseOptions (returnDataOnly, protectiveMonitoring) {
-        const responseOptions = { }
-
-        if (returnDataOnly) {
-            responseOptions.returnDataOnly = returnDataOnly
-        }
-        if (protectiveMonitoring) {
-            responseOptions.protectiveMonitoring = protectiveMonitoring
-        }
-        return responseOptions
-    }
-
-    buildFoundationsApiProtectiveMonitoring (environment, successfulMonitoringOptions, exceptionMonitoringOptions) {
-        return {
-            environment,
-            successfulMonitoringOptions,
-            exceptionMonitoringOptions
-        }
+        return await super.get(buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
     }
 
     // Successful response processing
@@ -124,14 +72,18 @@ export class FoundationsApiService extends ApiService {
     }
 
     protectivelyMonitorSuccessfulEvent (environment, successfulMonitoringOptions, response) {
-        if (this.protectiveMonitoringService) {
-            this.protectiveMonitoringService.monitorEventInformation(environment, successfulMonitoringOptions)
+        if (!this.protectiveMonitoringService) {
+            throw new Error('protectivelyMonitorSuccessfulEvent requires a protectiveMonitoringService')
         }
+
+        this.protectiveMonitoringService.monitorEventInformation(environment, successfulMonitoringOptions)
     }
 
     protectivelyMonitorExceptionEvent (environment, exceptionMonitoringOptions, exception) {
-        if (this.protectiveMonitoringService) {
-            this.protectiveMonitoringService.monitorEventError(environment, exceptionMonitoringOptions)
+        if (!this.protectiveMonitoringService) {
+            throw new Error('protectivelyMonitorExceptionEvent requires a protectiveMonitoringService')
         }
+
+        this.protectiveMonitoringService.monitorEventError(environment, exceptionMonitoringOptions)
     }
 }

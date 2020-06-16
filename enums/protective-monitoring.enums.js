@@ -17,7 +17,7 @@ const PriorityEnum = {
     EXCEPTION: 'Exception'
 }
 
-module.exports = {
+export {
     AuditCodeEnum,
     PmcCodeEnum,
     PriorityEnum
