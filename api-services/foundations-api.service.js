@@ -1,6 +1,5 @@
 import { ApiService } from './api.service'
 import { buildFoundationsApiRequestConfig } from './helpers'
-// import HttpHeaders from '../enums/http-headers.enum'
 
 export class FoundationsApiService extends ApiService {
     constructor (logger, protectiveMonitoringService) {
