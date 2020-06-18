@@ -88,51 +88,39 @@ describe('FoundationsApi.Service', function () {
             })
         })
 
-        describe('with returnDataOnly responseOptions', function () {
-            it('should return correct data, no response information', async function () {
+        describe('with protectiveMonitoring responseOptions', function () {
+            it('should return 200 response, correct data, correlation id header, protective monitor successful event', async function () {
                 nock(getDomain)
                     .get(getUri)
                     .reply(200, { 'test': 'pass' })
 
-                const foundationsApiService = new FoundationsApiService({})
+                const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
+                const mockedLog4js = {
+                    getLogger: function (logName) {
+                        if (logName === 'protective-monitoring') {
+                            return mockedPmLogger
+                        }
+                        return null
+                    }
+                }
+                const protectiveMonitoringService = new ProtectiveMonitoringService(mockedLog4js)
+                const foundationsApiService = new FoundationsApiService({}, protectiveMonitoringService)
 
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, '12345')
-                const responseOptions = buildFoundationsApiResponseOptions(true)
-                const result = await foundationsApiService.get(requestConfiguration, responseOptions)
+                const responseOptionsNoProtectiveMonitoring = {}
+                // This isnt currently a real world scenario, but to a ensure full code coverage*
+                const response = await foundationsApiService.get(requestConfiguration, responseOptionsNoProtectiveMonitoring)
 
-                expect(result).not.to.have.property('status')
+                checkForCorrelationIdHeader(response, '12345')
 
-                expect(result).not.to.have.property('data')
-                // The data should just be the expected response data, nothing else
-                expect(result).to.have.property('test')
-                expect(result.test).to.equal('pass')
+                checkResponseStatusCode(response, 200)
+
+                checkResponseData(response, 'test', 'pass')
+
+                expect(mockedPmLogger.info.calledOnce).to.be.false
+                expect(mockedPmLogger.error.calledOnce).to.be.false
             })
 
-            it('should return 400 response, correct data, logged error', async function () {
-                nock(getDomain)
-                    .get(getUri)
-                    .reply(400, { 'bad': 'request' })
-
-                let mockedLogger = {
-                    error: sinon.spy()
-                }
-
-                const foundationsApiService = new FoundationsApiService(mockedLogger)
-                const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, true)
-                const responseOptions = buildFoundationsApiResponseOptions(true)
-                const response = await foundationsApiService.get(requestConfiguration, responseOptions)
-
-                checkResponseStatusCode(response, 400)
-
-                checkResponseData(response, 'bad', 'request')
-
-                expect(mockedLogger.error.calledOnce).to.be.true
-                const loggedError = mockedLogger.error.firstCall.args[0]
-                checkLoggedErrorDetails(loggedError, 400, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 400')
-            })
-        })
-
-        describe('with protectiveMonitoring responseOptions', function () {
             it('should return 200 response, correct data, correlation id header, protective monitor successful event', async function () {
                 nock(getDomain)
                     .get(getUri)
@@ -154,7 +142,7 @@ describe('FoundationsApi.Service', function () {
 
                 const successfulMonitoringOptions = buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
                 const foundationsApiProtectiveMonitoring = buildFoundationsApiProtectiveMonitoring('test', successfulMonitoringOptions)
-                const responseOptions = buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
+                const responseOptions = buildFoundationsApiResponseOptions(foundationsApiProtectiveMonitoring)
 
                 const response = await foundationsApiService.get(requestConfiguration, responseOptions)
 
@@ -202,7 +190,7 @@ describe('FoundationsApi.Service', function () {
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
 
                 const foundationsApiProtectiveMonitoring = buildFoundationsApiProtectiveMonitoring('test', null, exceptionMonitoringOptions)
-                const responseOptions = buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
+                const responseOptions = buildFoundationsApiResponseOptions(foundationsApiProtectiveMonitoring)
 
                 const response = await foundationsApiService.get(requestConfiguration, responseOptions)
 
@@ -242,7 +230,7 @@ describe('FoundationsApi.Service', function () {
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
 
                 const foundationsApiProtectiveMonitoring = buildFoundationsApiProtectiveMonitoring('test', successMonitoringOptions)
-                const responseOptions = buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
+                const responseOptions = buildFoundationsApiResponseOptions(foundationsApiProtectiveMonitoring)
 
                 await expectThrowsAsync(() => foundationsApiService.get(requestConfiguration, responseOptions), 'protectivelyMonitorSuccessfulEvent requires a protectiveMonitoringService')
             })
@@ -263,7 +251,7 @@ describe('FoundationsApi.Service', function () {
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
 
                 const foundationsApiProtectiveMonitoring = buildFoundationsApiProtectiveMonitoring('test', null, exceptionMonitoringOptions)
-                const responseOptions = buildFoundationsApiResponseOptions(false, foundationsApiProtectiveMonitoring)
+                const responseOptions = buildFoundationsApiResponseOptions(foundationsApiProtectiveMonitoring)
 
                 await expectThrowsAsync(() => foundationsApiService.get(requestConfiguration, responseOptions), 'protectivelyMonitorExceptionEvent requires a protectiveMonitoringService')
             })

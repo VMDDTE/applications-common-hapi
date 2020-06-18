@@ -2,18 +2,20 @@
 /* eslint-disable no-new */
 import { describe, it } from 'mocha'
 import chai from 'chai'
-import { expectThrowsAsync } from '../helpers'
+import { expectThrows } from '../helpers'
 import {
-    addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration, validateApiRequestConfig,
+    addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration,
     buildApiRequestConfig, buildFoundationsApiRequestConfig,
-    buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions } from '../../api-services/helpers'
+    buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions,
+    validateApiRequestConfig,
+    throwUnexpectedResponseCodeError, returnDataIfSuccessfulOrThrowError } from '../../api-services/helpers'
 
 const expect = chai.expect
 
 describe('Api.Service Helpers', function () {
     describe('#checkForRequestConfiguration', function () {
         it('should throw error when no request config provided', async function () {
-            await expectThrowsAsync(() => addMaxContentLengthToRequestConfiguration(), 'Request Config required')
+            await expectThrows(() => addMaxContentLengthToRequestConfiguration(), 'Request Config required')
         })
     })
 
@@ -28,11 +30,11 @@ describe('Api.Service Helpers', function () {
         })
 
         it('should throw error when no request config provided', async function () {
-            await expectThrowsAsync(() => addMaxContentLengthToRequestConfiguration(), 'Request Config required')
+            await expectThrows(() => addMaxContentLengthToRequestConfiguration(), 'Request Config required')
         })
 
         it('should throw error when no maxContentLength provided', async function () {
-            await expectThrowsAsync(() => addMaxContentLengthToRequestConfiguration({}), 'maxContentLength required')
+            await expectThrows(() => addMaxContentLengthToRequestConfiguration({}), 'maxContentLength required')
         })
     })
 
@@ -47,41 +49,17 @@ describe('Api.Service Helpers', function () {
         })
 
         it('should throw error when no request config provided', async function () {
-            await expectThrowsAsync(() => addMaxBodyLengthToRequestConfiguration(), 'Request Config required')
+            await expectThrows(() => addMaxBodyLengthToRequestConfiguration(), 'Request Config required')
         })
 
         it('should throw error when no maxBodyLength provided', async function () {
-            await expectThrowsAsync(() => addMaxBodyLengthToRequestConfiguration({}), 'maxBodyLength required')
-        })
-    })
-
-    describe('#validateApiRequestConfig', function () {
-        it('should throw error when no request config provided', async function () {
-            await expectThrowsAsync(() => validateApiRequestConfig(), 'Request Config required')
-        })
-
-        it('should throw error when no method provided', async function () {
-            const requestConfig = {}
-            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a http method')
-        })
-
-        it('should throw error when no headers property is provided', async function () {
-            const requestConfig = { 'method': 'get' }
-            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
-        })
-
-        it('should throw error when no content-type header property is provided', async function () {
-            const requestConfig = {
-                'method': 'get',
-                'headers': {}
-            }
-            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
+            await expectThrows(() => addMaxBodyLengthToRequestConfiguration({}), 'maxBodyLength required')
         })
     })
 
     describe('#buildApiRequestConfig', function () {
         it('should throw error when no url provided', async function () {
-            await expectThrowsAsync(() => buildApiRequestConfig(), 'Url is required')
+            await expectThrows(() => buildApiRequestConfig(), 'Url is required')
         })
 
         it('should add url to request config', async function () {
@@ -113,7 +91,7 @@ describe('Api.Service Helpers', function () {
 
     describe('#buildFoundationsApiRequestConfig', function () {
         it('should throw error when no url provided', async function () {
-            await expectThrowsAsync(() => buildFoundationsApiRequestConfig(), 'Url is required')
+            await expectThrows(() => buildFoundationsApiRequestConfig(), 'Url is required')
         })
 
         it('should add url to request config', async function () {
@@ -185,33 +163,89 @@ describe('Api.Service Helpers', function () {
         })
 
         it('should throw error when no environment provided', async function () {
-            await expectThrowsAsync(() => buildFoundationsApiProtectiveMonitoring(), 'Environment is required')
+            await expectThrows(() => buildFoundationsApiProtectiveMonitoring(), 'Environment is required')
         })
 
         it('should throw error when no monitoring options provided', async function () {
-            await expectThrowsAsync(() => buildFoundationsApiProtectiveMonitoring('testEnvironment'), 'Either success or exception monintoring options are required')
+            await expectThrows(() => buildFoundationsApiProtectiveMonitoring('testEnvironment'), 'Either success or exception monintoring options are required')
         })
     })
 
     describe('#buildFoundationsApiResponseOptions', function () {
         it('should return correct result', async function () {
-            const returnDataOnly = true
             const protectiveMonitoring = { 'pm': 'protectiveMonitoringOptions' }
-            const foundationsApiResponseOptions = buildFoundationsApiResponseOptions(returnDataOnly, protectiveMonitoring)
-
-            expect(foundationsApiResponseOptions).to.have.property('returnDataOnly')
-            expect(foundationsApiResponseOptions.returnDataOnly).to.equal(returnDataOnly)
+            const foundationsApiResponseOptions = buildFoundationsApiResponseOptions(protectiveMonitoring)
 
             expect(foundationsApiResponseOptions).to.have.property('protectiveMonitoring')
             expect(foundationsApiResponseOptions.protectiveMonitoring).to.equal(protectiveMonitoring)
         })
 
         it('should return correct empty result', async function () {
-            await expectThrowsAsync(() => buildFoundationsApiResponseOptions(), 'buildFoundationsApiResponseOptions requires params')
+            await expectThrows(() => buildFoundationsApiResponseOptions(), 'buildFoundationsApiResponseOptions requires params')
+        })
+    })
+
+    describe('#validateApiRequestConfig', function () {
+        it('should throw error when no request config provided', async function () {
+            await expectThrows(() => validateApiRequestConfig(), 'Request Config required')
         })
 
-        it('should throw error when non boolean value passed for returnDataOnly', async function () {
-            await expectThrowsAsync(() => buildFoundationsApiResponseOptions('nonBoolean'), 'returnDataOnly is expected to be a boolean, but received \'nonBoolean\'')
+        it('should throw error when no method provided', async function () {
+            const requestConfig = {}
+            await expectThrows(() => validateApiRequestConfig(requestConfig), 'Request Config requires a http method')
+        })
+
+        it('should throw error when no headers property is provided', async function () {
+            const requestConfig = { 'method': 'get' }
+            await expectThrows(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
+        })
+
+        it('should throw error when no content-type header property is provided', async function () {
+            const requestConfig = {
+                'method': 'get',
+                'headers': {}
+            }
+            await expectThrows(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
+        })
+    })
+
+    describe('#returnDataIfSuccessfulOrThrowError', function () {
+        it('should throw error stating response is required', async function () {
+            await expectThrows(() => returnDataIfSuccessfulOrThrowError(), 'A response is required')
+        })
+
+        it('should throw error stating response.status is required', async function () {
+            await expectThrows(() => returnDataIfSuccessfulOrThrowError({}), 'Response doesnt contain a status')
+        })
+
+        it('should return correct data with default code', async function () {
+            const result = returnDataIfSuccessfulOrThrowError({ status: 200, data: { 'test': '200' } })
+            expect(result).to.have.property('test')
+            expect(result.test).to.equal('200')
+        })
+
+        it('should return correct data with specific code', async function () {
+            const result = returnDataIfSuccessfulOrThrowError({ status: 201, data: { 'test': '201' } }, 201)
+            expect(result).to.have.property('test')
+            expect(result.test).to.equal('201')
+        })
+
+        it('should throw correct error', async function () {
+            await expectThrows(() => returnDataIfSuccessfulOrThrowError({ status: 403 }), 'Unexpected response code \'403\', see log for full details')
+        })
+    })
+
+    describe('#throwUnexpectedResponseCodeError', function () {
+        it('should throw error stating response is required', async function () {
+            await expectThrows(() => throwUnexpectedResponseCodeError(), 'A response is required')
+        })
+
+        it('should throw error stating response.status is required', async function () {
+            await expectThrows(() => throwUnexpectedResponseCodeError({}), 'Response doesnt contain a status')
+        })
+
+        it('should throw correct error', async function () {
+            await expectThrows(() => throwUnexpectedResponseCodeError({ status: 403 }), 'Unexpected response code \'403\', see log for full details')
         })
     })
 })

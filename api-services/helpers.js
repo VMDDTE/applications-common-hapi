@@ -82,23 +82,14 @@ function buildFoundationsApiProtectiveMonitoring (environment, successfulMonitor
     }
 }
 
-function buildFoundationsApiResponseOptions (returnDataOnly, protectiveMonitoring) {
-    if (!returnDataOnly && !protectiveMonitoring) {
+function buildFoundationsApiResponseOptions (protectiveMonitoring) {
+    if (!protectiveMonitoring) {
         throw new Error('buildFoundationsApiResponseOptions requires params')
     }
 
-    const responseOptions = { }
-
-    if (returnDataOnly) {
-        if (returnDataOnly !== true && returnDataOnly !== false) {
-            throw new Error(`returnDataOnly is expected to be a boolean, but received '${returnDataOnly}'`)
-        }
-        responseOptions.returnDataOnly = returnDataOnly
-    }
     // Could validate protectiveMonitoring
-    if (protectiveMonitoring) {
-        responseOptions.protectiveMonitoring = protectiveMonitoring
-    }
+    const responseOptions = { protectiveMonitoring }
+
     return responseOptions
 }
 
@@ -114,6 +105,31 @@ function validateApiRequestConfig (requestConfiguration) {
     }
 }
 
+function validateResponse (response) {
+    if (!response) {
+        throw new Error('A response is required')
+    }
+
+    if (!response.status) {
+        throw new Error('Response doesnt contain a status')
+    }
+}
+
+function returnDataIfSuccessfulOrThrowError (response, successStatusCode = 200) {
+    validateResponse(response)
+
+    if (response.status === successStatusCode) {
+        return response.data
+    }
+    throwUnexpectedResponseCodeError(response)
+}
+
+function throwUnexpectedResponseCodeError (response) {
+    validateResponse(response)
+
+    throw new Error(`Unexpected response code '${response.status}', see log for full details`)
+}
+
 export {
     checkForRequestConfiguration,
 
@@ -126,5 +142,8 @@ export {
     buildFoundationsApiProtectiveMonitoring,
     buildFoundationsApiResponseOptions,
 
-    validateApiRequestConfig
+    validateApiRequestConfig,
+
+    returnDataIfSuccessfulOrThrowError,
+    throwUnexpectedResponseCodeError
 }

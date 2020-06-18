@@ -26,11 +26,7 @@ export class FoundationsApiService extends ApiService {
             return response
         }
 
-        this.processProtectiveMonitoring(foundationApiRequestOptions, response)
-
-        if (foundationApiRequestOptions.returnDataOnly) {
-            return response.data
-        }
+        this.processProtectiveMonitoring(foundationApiRequestOptions.protectiveMonitoring, response)
 
         return response
     }
@@ -38,26 +34,25 @@ export class FoundationsApiService extends ApiService {
     // Exception response processing
 
     processException (exception, foundationApiRequestConfig, foundationApiRequestOptions) {
-        this.logStandardException(foundationApiRequestConfig, exception)
+        this.logException(foundationApiRequestConfig, exception)
 
         // The original api service created in Licensing, simply consumed the error after logging, however returning the response will be more useful
         if (!foundationApiRequestOptions) {
             return exception.response
         }
 
-        this.processProtectiveMonitoring(foundationApiRequestOptions, null, exception)
+        this.processProtectiveMonitoring(foundationApiRequestOptions.protectiveMonitoring, null, exception)
 
         return exception.response
     }
 
-    logStandardException (foundationApiRequestConfig, exception) {
+    logException (foundationApiRequestConfig, exception) {
         this.logApiServiceException(foundationApiRequestConfig.method, foundationApiRequestConfig.url, exception)
     }
 
     // Protective monitoring
 
-    processProtectiveMonitoring (foundationApiRequestOptions, response, exception) {
-        const protectiveMonitoring = foundationApiRequestOptions.protectiveMonitoring
+    processProtectiveMonitoring (protectiveMonitoring, response, exception) {
         if (!protectiveMonitoring) {
             return
         }
