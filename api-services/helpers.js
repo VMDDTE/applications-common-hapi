@@ -82,23 +82,14 @@ function buildFoundationsApiProtectiveMonitoring (environment, successfulMonitor
     }
 }
 
-function buildFoundationsApiResponseOptions (returnDataOnly, protectiveMonitoring) {
-    if (!returnDataOnly && !protectiveMonitoring) {
+function buildFoundationsApiResponseOptions (protectiveMonitoring) {
+    if (!protectiveMonitoring) {
         throw new Error('buildFoundationsApiResponseOptions requires params')
     }
 
-    const responseOptions = { }
-
-    if (returnDataOnly) {
-        if (returnDataOnly !== true && returnDataOnly !== false) {
-            throw new Error(`returnDataOnly is expected to be a boolean, but received '${returnDataOnly}'`)
-        }
-        responseOptions.returnDataOnly = returnDataOnly
-    }
     // Could validate protectiveMonitoring
-    if (protectiveMonitoring) {
-        responseOptions.protectiveMonitoring = protectiveMonitoring
-    }
+    const responseOptions = { protectiveMonitoring }
+
     return responseOptions
 }
 

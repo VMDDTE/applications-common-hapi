@@ -195,12 +195,8 @@ describe('Api.Service Helpers', function () {
 
     describe('#buildFoundationsApiResponseOptions', function () {
         it('should return correct result', async function () {
-            const returnDataOnly = true
             const protectiveMonitoring = { 'pm': 'protectiveMonitoringOptions' }
-            const foundationsApiResponseOptions = buildFoundationsApiResponseOptions(returnDataOnly, protectiveMonitoring)
-
-            expect(foundationsApiResponseOptions).to.have.property('returnDataOnly')
-            expect(foundationsApiResponseOptions.returnDataOnly).to.equal(returnDataOnly)
+            const foundationsApiResponseOptions = buildFoundationsApiResponseOptions(protectiveMonitoring)
 
             expect(foundationsApiResponseOptions).to.have.property('protectiveMonitoring')
             expect(foundationsApiResponseOptions.protectiveMonitoring).to.equal(protectiveMonitoring)
@@ -208,10 +204,6 @@ describe('Api.Service Helpers', function () {
 
         it('should return correct empty result', async function () {
             await expectThrowsAsync(() => buildFoundationsApiResponseOptions(), 'buildFoundationsApiResponseOptions requires params')
-        })
-
-        it('should throw error when non boolean value passed for returnDataOnly', async function () {
-            await expectThrowsAsync(() => buildFoundationsApiResponseOptions('nonBoolean'), 'returnDataOnly is expected to be a boolean, but received \'nonBoolean\'')
         })
     })
 })
