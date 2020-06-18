@@ -24,6 +24,19 @@ function checkRequestData (response, expectedPropertyName, expectedPropertyValue
     expect(parsedData[expectedPropertyName]).to.equal(expectedPropertyValue)
 }
 
+async function expectThrows (method, errorMessage) {
+    let error = null
+    try {
+        method()
+    } catch (err) {
+        error = err
+    }
+    expect(error).to.be.an('Error')
+    if (errorMessage) {
+        expect(error.message).to.equal(errorMessage)
+    }
+}
+
 async function expectThrowsAsync (method, errorMessage) {
     let error = null
     try {
@@ -77,6 +90,7 @@ export {
     checkResponseForRequestData,
     checkRequestData,
 
+    expectThrows,
     expectThrowsAsync,
 
     checkResponseStatusCode,

@@ -6,7 +6,7 @@ import {
     addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration, buildFoundationsApiRequestConfig,
     buildFoundationsApiProtectiveMonitoring,
     buildFoundationsApiResponseOptions,
-    throwUnexpectedResponseCodeError } from './api-services/helpers'
+    returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
 
 export {
@@ -22,6 +22,7 @@ export {
     buildFoundationsApiRequestConfig,
     buildFoundationsApiProtectiveMonitoring,
     buildFoundationsApiResponseOptions,
+    returnDataIfSuccessfulOrThrowError,
     throwUnexpectedResponseCodeError,
 
     ProtectiveMonitoringService,

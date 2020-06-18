@@ -105,14 +105,27 @@ function validateApiRequestConfig (requestConfiguration) {
     }
 }
 
-function throwUnexpectedResponseCodeError (response) {
+function validateResponse (response) {
     if (!response) {
-        throw new Error('A response is required to throw unexpected response code error')
+        throw new Error('A response is required')
     }
 
     if (!response.status) {
         throw new Error('Response doesnt contain a status')
     }
+}
+
+function returnDataIfSuccessfulOrThrowError (response, successStatusCode = 200) {
+    validateResponse(response)
+
+    if (response.status === successStatusCode) {
+        return response.data
+    }
+    throwUnexpectedResponseCodeError(response)
+}
+
+function throwUnexpectedResponseCodeError (response) {
+    validateResponse(response)
 
     throw new Error(`Unexpected response code '${response.status}', see log for full details`)
 }
@@ -131,5 +144,6 @@ export {
 
     validateApiRequestConfig,
 
+    returnDataIfSuccessfulOrThrowError,
     throwUnexpectedResponseCodeError
 }
