@@ -5,7 +5,8 @@ import { ProtectiveMonitoringService } from './services/protective-monitoring.se
 import {
     addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration, buildFoundationsApiRequestConfig,
     buildFoundationsApiProtectiveMonitoring,
-    buildFoundationsApiResponseOptions } from './api-services/helpers'
+    buildFoundationsApiResponseOptions,
+    throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
 
 export {
@@ -21,6 +22,7 @@ export {
     buildFoundationsApiRequestConfig,
     buildFoundationsApiProtectiveMonitoring,
     buildFoundationsApiResponseOptions,
+    throwUnexpectedResponseCodeError,
 
     ProtectiveMonitoringService,
     buildProtectiveMonitoringOptions

@@ -105,6 +105,18 @@ function validateApiRequestConfig (requestConfiguration) {
     }
 }
 
+function throwUnexpectedResponseCodeError (response) {
+    if (!response) {
+        throw new Error('A response is required to throw unexpected response code error')
+    }
+
+    if (!response.status) {
+        throw new Error('Response doesnt contain a status')
+    }
+
+    throw new Error(`Unexpected response code '${response.status}', see log for full details`)
+}
+
 export {
     checkForRequestConfiguration,
 
@@ -117,5 +129,7 @@ export {
     buildFoundationsApiProtectiveMonitoring,
     buildFoundationsApiResponseOptions,
 
-    validateApiRequestConfig
+    validateApiRequestConfig,
+
+    throwUnexpectedResponseCodeError
 }

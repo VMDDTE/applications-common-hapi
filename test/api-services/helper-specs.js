@@ -4,9 +4,10 @@ import { describe, it } from 'mocha'
 import chai from 'chai'
 import { expectThrowsAsync } from '../helpers'
 import {
-    addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration, validateApiRequestConfig,
+    addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration,
     buildApiRequestConfig, buildFoundationsApiRequestConfig,
-    buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions } from '../../api-services/helpers'
+    buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions,
+    validateApiRequestConfig, throwUnexpectedResponseCodeError } from '../../api-services/helpers'
 
 const expect = chai.expect
 
@@ -52,30 +53,6 @@ describe('Api.Service Helpers', function () {
 
         it('should throw error when no maxBodyLength provided', async function () {
             await expectThrowsAsync(() => addMaxBodyLengthToRequestConfiguration({}), 'maxBodyLength required')
-        })
-    })
-
-    describe('#validateApiRequestConfig', function () {
-        it('should throw error when no request config provided', async function () {
-            await expectThrowsAsync(() => validateApiRequestConfig(), 'Request Config required')
-        })
-
-        it('should throw error when no method provided', async function () {
-            const requestConfig = {}
-            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a http method')
-        })
-
-        it('should throw error when no headers property is provided', async function () {
-            const requestConfig = { 'method': 'get' }
-            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
-        })
-
-        it('should throw error when no content-type header property is provided', async function () {
-            const requestConfig = {
-                'method': 'get',
-                'headers': {}
-            }
-            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
         })
     })
 
@@ -204,6 +181,44 @@ describe('Api.Service Helpers', function () {
 
         it('should return correct empty result', async function () {
             await expectThrowsAsync(() => buildFoundationsApiResponseOptions(), 'buildFoundationsApiResponseOptions requires params')
+        })
+    })
+
+    describe('#validateApiRequestConfig', function () {
+        it('should throw error when no request config provided', async function () {
+            await expectThrowsAsync(() => validateApiRequestConfig(), 'Request Config required')
+        })
+
+        it('should throw error when no method provided', async function () {
+            const requestConfig = {}
+            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a http method')
+        })
+
+        it('should throw error when no headers property is provided', async function () {
+            const requestConfig = { 'method': 'get' }
+            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
+        })
+
+        it('should throw error when no content-type header property is provided', async function () {
+            const requestConfig = {
+                'method': 'get',
+                'headers': {}
+            }
+            await expectThrowsAsync(() => validateApiRequestConfig(requestConfig), 'Request Config requires a content-type header')
+        })
+    })
+
+    describe('#throwUnexpectedResponseCodeError', function () {
+        it('should throw error stating response is required', async function () {
+            await expectThrowsAsync(() => throwUnexpectedResponseCodeError(), 'A response is required to throw unexpected response code error')
+        })
+
+        it('should throw error stating response.status is required', async function () {
+            await expectThrowsAsync(() => throwUnexpectedResponseCodeError({}), 'Response doesnt contain a status')
+        })
+
+        it('should throw correct error', async function () {
+            await expectThrowsAsync(() => throwUnexpectedResponseCodeError({ status: 403 }), 'Unexpected response code \'403\', see log for full details')
         })
     })
 })
