@@ -77,7 +77,7 @@ export class ApiService {
     logApiServiceException (httpMethod, url, exception) {
         // What case should this be?
         this.logger.error({
-            'ErrorStatus': exception.response.status,
+            'ErrorStatus': exception.response ? exception.response.status : 'No Response',
             'ApiServiceUrl': `[${httpMethod.toUpperCase()}] ${url}`,
             'Exception': exception
         })
