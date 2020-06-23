@@ -18,7 +18,7 @@ export {
     PriorityEnum,
     AuthorisationRequestHeaderEnum,
     PermissionEnum,
-    RoleEnum
+    RoleEnum,
 
     ApiService,
     FoundationsApiService,
