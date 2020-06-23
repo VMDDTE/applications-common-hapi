@@ -1,3 +1,3 @@
-export const RoleEnum = {
+export const roleEnum = {
     AUTHORISED_USER: 'AuthorisedUser'
 }
