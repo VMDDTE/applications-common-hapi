@@ -1,4 +1,4 @@
-import { HttpHeadersEnum } from '../enums/http-headers.enum'
+import { httpHeadersEnum } from '../enums/http-headers.enum'
 
 function checkForRequestConfiguration (requestConfiguration) {
     if (!requestConfiguration) {
@@ -58,7 +58,7 @@ function buildFoundationsApiRequestConfig (url, headers, data, originatingReques
 
     if (originatingRequestId) {
         // At this point we should always have a headers object
-        requestConfigurationHeaders[HttpHeadersEnum.CORRELATION_ID] = originatingRequestId
+        requestConfigurationHeaders[httpHeadersEnum.CORRELATION_ID] = originatingRequestId
     }
 
     requestConfiguration.headers = requestConfigurationHeaders

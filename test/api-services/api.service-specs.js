@@ -55,6 +55,44 @@ describe('Api.Service', function () {
         })
     })
 
+    describe('#ENOTFOUND', function () {
+        const getDomain = 'http://test-get.apiservice.com:0123'
+        const getUri = '/api/1'
+
+        it('ENOTFOUND should log error with correct data', async function () {
+            let mockedLogger = {
+                error: sinon.spy()
+            }
+
+            const apiService = new ApiService(mockedLogger)
+            const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
+            await expectThrowsAsync(() => apiService.get(requestConfiguration))
+
+            expect(mockedLogger.error.calledOnce).to.be.true
+            const loggedError = mockedLogger.error.firstCall.args[0]
+            checkLoggedErrorDetails(loggedError, 'No Response', `[GET] ${getDomain}${getUri}`, 'Error: getaddrinfo ENOTFOUND test-get.apiservice.com')
+        })
+    })
+
+    describe('#ECONNREFUSED', function () {
+        const getDomain = 'http://localhost:0123'
+        const getUri = '/api/1'
+
+        it('ECONNREFUSED should log error with correct data', async function () {
+            let mockedLogger = {
+                error: sinon.spy()
+            }
+
+            const apiService = new ApiService(mockedLogger)
+            const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
+            await expectThrowsAsync(() => apiService.get(requestConfiguration))
+
+            expect(mockedLogger.error.calledOnce).to.be.true
+            const loggedError = mockedLogger.error.firstCall.args[0]
+            checkLoggedErrorDetails(loggedError, 'No Response', `[GET] ${getDomain}${getUri}`, 'Error: connect ECONNREFUSED 127.0.0.1:123')
+        })
+    })
+
     describe('#get', function () {
         const getDomain = 'http://test-get.apiservice.com'
         const getUri = '/api/1'
