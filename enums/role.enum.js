@@ -1,3 +1,5 @@
 export const roleEnum = {
-    AUTHORISED_USER: 'AuthorisedUser'
+    ADMINISTRATOR: 'Admin',
+    AUTHORISED_USER: 'AuthorisedUser',
+    PRIMARY_ADMINISTRATOR: 'PrimaryAdmin'
 }
