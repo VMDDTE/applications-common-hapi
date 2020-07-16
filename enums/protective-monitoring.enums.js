@@ -3,22 +3,22 @@
 // So we will use 100,000 - 199,000 for applcations audit codes
 // CRM: 100,000 - 100,999
 // Licensing: 101000 - 101999
-const AuditCodeEnum = {
+const auditCodeEnum = {
     LICENSING_SUBMISSION_FAILURE: 101000
 }
 
-const PmcCodeEnum = {
+const pmcCodeEnum = {
     BUSINESS_TRANSACTIONS: 'PMC-07-06-AB'
 }
 
-const PriorityEnum = {
+const priorityEnum = {
     NORMAL: 'Normal',
     UNEXPECTED: 'Unexpected',
     EXCEPTION: 'Exception'
 }
 
 export {
-    AuditCodeEnum,
-    PmcCodeEnum,
-    PriorityEnum
+    auditCodeEnum,
+    pmcCodeEnum,
+    priorityEnum
 }

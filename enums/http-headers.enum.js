@@ -1,4 +1,4 @@
-const HttpHeadersEnum = {
+const httpHeadersEnum = {
     CORRELATION_ID: 'X-VMD-Request-Id',
 
     ORGANISATION_REFERENCE: 'vmd-orgref',
@@ -13,5 +13,5 @@ const HttpHeadersEnum = {
 }
 
 export {
-    HttpHeadersEnum
+    httpHeadersEnum
 }
