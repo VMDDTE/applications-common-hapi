@@ -47,6 +47,11 @@ function buildApiRequestConfig (url, headers, data) {
 }
 
 function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
+
+    if (!process.env.COMPONENT) {
+        throw new Error('Component is expected in the user environment')
+    }
+
     const requestConfiguration = buildApiRequestConfig(url, headers, data)
 
     let requestConfigurationHeaders = requestConfiguration.headers
@@ -62,9 +67,7 @@ function buildFoundationsApiRequestConfig (url, headers, data, originatingReques
         requestConfigurationHeaders[httpHeadersEnum.CORRELATION_ID] = originatingRequestId
     }
 
-    if (process.env.COMPONENT) {
-        requestConfigurationHeaders['vmd-component'] = process.env.COMPONENT
-    }
+    requestConfigurationHeaders['vmd-component'] = process.env.COMPONENT
 
     requestConfiguration.headers = requestConfigurationHeaders
 
