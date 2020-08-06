@@ -142,6 +142,17 @@ describe('Api.Service Helpers', function () {
 
             expect(requestConfig).to.have.property('data')
             expect(requestConfig.data).to.equal(data)
+
+            expect(requestConfig.headers).not.to.have.property('vmd-component')
+        })
+
+        it('should add the component header from the process env', async function () {
+            process.env.COMPONENT = 'TESTCOMPONENT'
+            const url = 'test.url'
+            const data = { 'testData': 'Some Test Data' }
+            const requestConfig = buildFoundationsApiRequestConfig(url, null, data)
+
+            expect(requestConfig.headers['vmd-component']).to.equal('TESTCOMPONENT')
         })
     })
 

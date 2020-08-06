@@ -50,6 +50,7 @@ function buildFoundationsApiRequestConfig (url, headers, data, originatingReques
     const requestConfiguration = buildApiRequestConfig(url, headers, data)
 
     let requestConfigurationHeaders = requestConfiguration.headers
+
     if (!requestConfigurationHeaders || !requestConfigurationHeaders['Content-Type']) {
         // No content type, default to json
         requestConfigurationHeaders = requestConfigurationHeaders || {}
@@ -59,6 +60,10 @@ function buildFoundationsApiRequestConfig (url, headers, data, originatingReques
     if (originatingRequestId) {
         // At this point we should always have a headers object
         requestConfigurationHeaders[httpHeadersEnum.CORRELATION_ID] = originatingRequestId
+    }
+
+    if (process.env.COMPONENT) {
+        requestConfigurationHeaders['vmd-component'] = process.env.COMPONENT
     }
 
     requestConfiguration.headers = requestConfigurationHeaders
