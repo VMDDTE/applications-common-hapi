@@ -18,6 +18,10 @@ import nock from 'nock'
 const expect = chai.expect
 
 describe('FoundationsApi.Service', function () {
+    beforeEach(function () {
+        process.env.COMPONENT = 'TESTCOMPONENT'
+    })
+
     describe('#get (passed through to )', function () {
         const getDomain = 'http://test-get.foundationsapiservice.com'
         const getUri = '/api/1'

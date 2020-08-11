@@ -90,6 +90,10 @@ describe('Api.Service Helpers', function () {
     })
 
     describe('#buildFoundationsApiRequestConfig', function () {
+        beforeEach(function () {
+            process.env.COMPONENT = 'TESTCOMPONENT'
+        })
+
         it('should throw error when no url provided', async function () {
             await expectThrows(() => buildFoundationsApiRequestConfig(), 'Url is required')
         })
@@ -100,6 +104,7 @@ describe('Api.Service Helpers', function () {
 
             expect(requestConfig).to.have.property('url')
             expect(requestConfig.url).to.equal(url)
+            expect(requestConfig.headers['vmd-component']).to.equal('TESTCOMPONENT')
         })
 
         it('should add default content-type header to request config when not provided', async function () {
@@ -109,6 +114,7 @@ describe('Api.Service Helpers', function () {
             expect(requestConfig).to.have.property('headers')
             expect(requestConfig.headers).to.have.property('Content-Type')
             expect(requestConfig.headers['Content-Type']).to.equal('application/json')
+            expect(requestConfig.headers['vmd-component']).to.equal('TESTCOMPONENT')
         })
 
         it('should add content-type header to request config when provided', async function () {
@@ -120,6 +126,7 @@ describe('Api.Service Helpers', function () {
             expect(requestConfig).to.have.property('headers')
             expect(requestConfig.headers).to.have.property('Content-Type')
             expect(requestConfig.headers['Content-Type']).to.equal(customContentType)
+            expect(requestConfig.headers['vmd-component']).to.equal('TESTCOMPONENT')
         })
 
         it('should add additional headers to request config when provided', async function () {
@@ -133,6 +140,7 @@ describe('Api.Service Helpers', function () {
             expect(requestConfig.headers['Content-Type']).to.equal('application/json')
             expect(requestConfig.headers).to.have.property('testHeader')
             expect(requestConfig.headers['testHeader']).to.equal('Some Test header')
+            expect(requestConfig.headers['vmd-component']).to.equal('TESTCOMPONENT')
         })
 
         it('should add data to request config when provided', async function () {
@@ -142,6 +150,7 @@ describe('Api.Service Helpers', function () {
 
             expect(requestConfig).to.have.property('data')
             expect(requestConfig.data).to.equal(data)
+            expect(requestConfig.headers['vmd-component']).to.equal('TESTCOMPONENT')
         })
     })
 

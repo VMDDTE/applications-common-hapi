@@ -47,9 +47,15 @@ function buildApiRequestConfig (url, headers, data) {
 }
 
 function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
+
+    if (!process.env.COMPONENT) {
+        throw new Error('Component is expected in the user environment')
+    }
+
     const requestConfiguration = buildApiRequestConfig(url, headers, data)
 
     let requestConfigurationHeaders = requestConfiguration.headers
+
     if (!requestConfigurationHeaders || !requestConfigurationHeaders['Content-Type']) {
         // No content type, default to json
         requestConfigurationHeaders = requestConfigurationHeaders || {}
@@ -60,6 +66,8 @@ function buildFoundationsApiRequestConfig (url, headers, data, originatingReques
         // At this point we should always have a headers object
         requestConfigurationHeaders[httpHeadersEnum.CORRELATION_ID] = originatingRequestId
     }
+
+    requestConfigurationHeaders['vmd-component'] = process.env.COMPONENT
 
     requestConfiguration.headers = requestConfigurationHeaders
 
