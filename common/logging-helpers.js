@@ -25,11 +25,12 @@ function logRequestInfo (request, organisationReference, loggedInUserId) {
     }
 }
 
-function logStandardError (statusCode, data, message) {
+function logStandardError (message, statusCode, data, errorMessage) {
     log.error({
+        message,
         statusCode,
         data,
-        message
+        errorMessage
     })
 }
 
