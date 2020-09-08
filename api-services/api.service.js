@@ -60,11 +60,11 @@ export class ApiService {
     async actionRequest (requestConfig, responseOptions) {
         validateApiRequestConfig(requestConfig)
 
-        this.logActionRequest('BeginRequest', requestConfig)
+        this.logActionRequest('ApiService BeginRequest', requestConfig)
         return await this.axiosClient(requestConfig)
             .then(response => this.processResponse(response, responseOptions))
             .catch(exception => this.processException(exception, requestConfig, responseOptions))
-            .finally(() => this.logActionRequest('EndRequest', requestConfig))
+            .finally(() => this.logActionRequest('ApiService EndRequest', requestConfig))
     }
 
     processResponse (response, _responseOptions) {
@@ -81,7 +81,10 @@ export class ApiService {
     logActionRequest (actionMessage, requestConfig) {
         const httpMethod = requestConfig.method
         const url = requestConfig.url
-        const logMessage = { [actionMessage]: `[${httpMethod.toUpperCase()}] ${url}` }
+        const logMessage = {
+            'message': actionMessage,
+            'apiServiceUrl': this.buildApiServiceUrl(httpMethod, url)
+        }
 
         // We only want to log health check endpoints as debug
         if (isHealthUrl(url)) {
@@ -94,9 +97,14 @@ export class ApiService {
     logApiServiceException (httpMethod, url, exception) {
         // What case should this be?
         this.logger.error({
-            'ErrorStatus': exception.response ? exception.response.status : 'No Response',
-            'ApiServiceUrl': `[${httpMethod.toUpperCase()}] ${url}`,
-            'Exception': exception
+            'message': 'ApiService Exception',
+            'apiServiceUrl': this.buildApiServiceUrl(httpMethod, url),
+            'errorStatus': exception.response ? exception.response.status : 'No Response',
+            'exception': exception
         })
+    }
+
+    buildApiServiceUrl (httpMethod, url) {
+        return `[${httpMethod.toUpperCase()}] ${url}`
     }
 }

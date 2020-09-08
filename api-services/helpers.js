@@ -128,14 +128,14 @@ function returnDataIfSuccessfulOrThrowError (response, successStatusCode = 200) 
     if (response.status === successStatusCode) {
         return response.data
     }
-    throwUnexpectedResponseCodeError(response)
+    throwUnexpectedResponseCodeError(response, successStatusCode)
 }
 
-function throwUnexpectedResponseCodeError (response) {
+function throwUnexpectedResponseCodeError (response, expectedStatusCode = 200) {
+    // Validate response again, because this method can be called separately
     validateResponse(response)
 
-    // console.error(`Unexpected response code ${response.status}, expected ${successStatusCode}), URL: ${response.config.url}`)
-    throw new Error(`Unexpected response code '${response.status}', see log for full details`)
+    throw new Error(`Unexpected response code '${response.status}', expected '${expectedStatusCode}'`)
 }
 
 export {
