@@ -138,6 +138,10 @@ function throwUnexpectedResponseCodeError (response, expectedStatusCode = 200) {
     throw new Error(`Unexpected response code '${response.status}', expected '${expectedStatusCode}'`)
 }
 
+function extractCorrelationId (requestConfiguration) {
+    return requestConfiguration.headers[httpHeadersEnum.CORRELATION_ID]
+}
+
 export {
     checkForRequestConfiguration,
 
@@ -153,5 +157,7 @@ export {
     validateApiRequestConfig,
 
     returnDataIfSuccessfulOrThrowError,
-    throwUnexpectedResponseCodeError
+    throwUnexpectedResponseCodeError,
+
+    extractCorrelationId
 }

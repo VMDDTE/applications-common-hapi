@@ -1,7 +1,8 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
-import { validateApiRequestConfig } from './helpers'
+import { validateApiRequestConfig, extractCorrelationId } from './helpers'
 import { isHealthUrl } from '../common/url-helpers'
+import { buildBasicLogMessage } from '../common/logging-helpers'
 
 export class ApiService {
     constructor (logger) {
@@ -68,12 +69,12 @@ export class ApiService {
     }
 
     processResponse (response, _responseOptions) {
-        // The default is sinmply to return the response, but this way allows us to override this behaviour
+        // The default is simply to return the response, but this way allows us to override this behaviour
         return response
     }
 
     processException (exception, requestConfig, _responseOptions) {
-        this.logApiServiceException(requestConfig.method, requestConfig.url, exception)
+        this.logApiServiceException(requestConfig, exception)
         // Because we are throwing another exception here (correct for generic api!?), we will need to use catch everywhere its used
         throw exception
     }
@@ -81,10 +82,10 @@ export class ApiService {
     logActionRequest (actionMessage, requestConfig) {
         const httpMethod = requestConfig.method
         const url = requestConfig.url
-        const logMessage = {
-            'message': actionMessage,
-            'apiServiceUrl': this.buildApiServiceUrl(httpMethod, url)
-        }
+        const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
+
+        logMessage.message = actionMessage
+        logMessage.apiServiceUrl = this.buildApiServiceUrl(httpMethod, url)
 
         // We only want to log health check endpoints as debug
         if (isHealthUrl(url)) {
@@ -94,14 +95,17 @@ export class ApiService {
         }
     }
 
-    logApiServiceException (httpMethod, url, exception) {
-        // What case should this be?
-        this.logger.error({
-            'message': 'ApiService Exception',
-            'apiServiceUrl': this.buildApiServiceUrl(httpMethod, url),
-            'errorStatus': exception.response ? exception.response.status : 'No Response',
-            'exception': exception
-        })
+    logApiServiceException (requestConfig, exception) {
+        const httpMethod = requestConfig.method
+        const url = requestConfig.url
+
+        const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
+        logMessage.message = 'ApiService Exception'
+        logMessage.apiServiceUrl = this.buildApiServiceUrl(httpMethod, url)
+        logMessage.errorStatus = exception.response ? exception.response.status : 'No Response'
+        logMessage.exception = exception
+
+        this.logger.error(logMessage)
     }
 
     buildApiServiceUrl (httpMethod, url) {
