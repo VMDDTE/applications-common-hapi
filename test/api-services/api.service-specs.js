@@ -3,11 +3,11 @@
 import { describe, it } from 'mocha'
 import chai from 'chai'
 import nock from 'nock'
-import sinon from 'sinon'
 import {
     expectThrowsAsync,
     checkRequestData, checkResponseStatusCode, checkResponseData,
-    checkLoggedErrorDetails } from '../helpers'
+    checkLoggedErrorDetails,
+    buildMockLogger } from '../helpers'
 import { ApiService } from '../../api-services/api.service'
 import { addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration, buildApiRequestConfig } from '../../api-services/helpers'
 
@@ -45,10 +45,7 @@ describe('Api.Service', function () {
                 .get(testUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${testDomain}${testUri}`)
             await expectThrowsAsync(() => apiService.get(requestConfiguration), 'Request Config requires a content-type header')
@@ -60,10 +57,7 @@ describe('Api.Service', function () {
         const getUri = '/api/1'
 
         it('ENOTFOUND should log error with correct data', async function () {
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
@@ -79,10 +73,7 @@ describe('Api.Service', function () {
         const getUri = '/api/1'
 
         it('ECONNREFUSED should log error with correct data', async function () {
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
@@ -102,7 +93,8 @@ describe('Api.Service', function () {
                 .get(getUri)
                 .reply(200, { 'test': 'pass' })
 
-            const apiService = new ApiService({})
+            const mockedLogger = buildMockLogger()
+            const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             const response = await apiService.get(requestConfiguration)
 
@@ -116,10 +108,7 @@ describe('Api.Service', function () {
                 .get(getUri)
                 .reply(400, { 'bad': 'request' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
@@ -134,13 +123,12 @@ describe('Api.Service', function () {
                 .get(getUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
+
+            expect(mockedLogger.info.calledTwice).to.be.true
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
@@ -157,7 +145,8 @@ describe('Api.Service', function () {
                 .post(postUri)
                 .reply(200, { 'test': 'pass' })
 
-            const apiService = new ApiService({})
+            const mockedLogger = buildMockLogger()
+            const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(
                 `${postDomain}${postUri}`,
                 { 'Content-Type': 'application/test' },
@@ -176,7 +165,8 @@ describe('Api.Service', function () {
                 .post(postUri)
                 .reply(200, { 'test': 'pass' })
 
-            const apiService = new ApiService({})
+            const mockedLogger = buildMockLogger()
+            const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(
                 `${postDomain}${postUri}`,
                 { 'Content-Type': 'application/test' },
@@ -207,10 +197,7 @@ describe('Api.Service', function () {
                 .post(postUri)
                 .reply(400, { 'bad': 'request' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${postDomain}${postUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.post(requestConfiguration))
@@ -225,10 +212,7 @@ describe('Api.Service', function () {
                 .post(postUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${postDomain}${postUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.post(requestConfiguration))
@@ -243,10 +227,7 @@ describe('Api.Service', function () {
                 .post(postUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${postDomain}${postUri}`)
             await expectThrowsAsync(() => apiService.post(requestConfiguration), 'Request Config requires a content-type header')
@@ -262,7 +243,8 @@ describe('Api.Service', function () {
                 .put(putUri)
                 .reply(200, { 'test': 'pass' })
 
-            const apiService = new ApiService({})
+            const mockedLogger = buildMockLogger()
+            const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
             const response = await apiService.put(requestConfiguration)
 
@@ -276,10 +258,7 @@ describe('Api.Service', function () {
                 .put(putUri)
                 .reply(400, { 'bad': 'request' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.put(requestConfiguration))
@@ -294,10 +273,7 @@ describe('Api.Service', function () {
                 .put(putUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.put(requestConfiguration))
@@ -312,10 +288,7 @@ describe('Api.Service', function () {
                 .put(putUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${putDomain}${putUri}`)
             await expectThrowsAsync(() => apiService.put(requestConfiguration), 'Request Config requires a content-type header')
@@ -331,7 +304,8 @@ describe('Api.Service', function () {
                 .patch(patchUri)
                 .reply(200, { 'test': 'pass' })
 
-            const apiService = new ApiService({})
+            const mockedLogger = buildMockLogger()
+            const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${patchDomain}${patchUri}`, { 'Content-Type': 'application/test' })
             const response = await apiService.patch(requestConfiguration)
 
@@ -345,10 +319,7 @@ describe('Api.Service', function () {
                 .patch(patchUri)
                 .reply(400, { 'bad': 'request' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${patchDomain}${patchUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.patch(requestConfiguration))
@@ -363,10 +334,7 @@ describe('Api.Service', function () {
                 .patch(patchUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${patchDomain}${patchUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.patch(requestConfiguration))
@@ -381,10 +349,7 @@ describe('Api.Service', function () {
                 .patch(patchUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const apiService = new ApiService(mockedLogger)
             const requestConfiguration = buildApiRequestConfig(`${patchDomain}${patchUri}`)
             await expectThrowsAsync(() => apiService.patch(requestConfiguration), 'Request Config requires a content-type header')

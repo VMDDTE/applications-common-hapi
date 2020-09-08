@@ -12,7 +12,8 @@ import { buildProtectiveMonitoringOptions } from '../../services/helpers'
 import {
     expectThrowsAsync,
     checkForCorrelationIdHeader, checkResponseStatusCode, checkResponseData,
-    checkLoggedErrorDetails, checkLoggedProtectiveMonitoringDetails } from '../helpers'
+    checkLoggedErrorDetails, checkLoggedProtectiveMonitoringDetails,
+    buildMockLogger } from '../helpers'
 import nock from 'nock'
 
 const expect = chai.expect
@@ -32,7 +33,8 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(200, { 'test': 'pass' })
 
-                const foundationsApiService = new FoundationsApiService({})
+                const mockedLogger = buildMockLogger()
+                const foundationsApiService = new FoundationsApiService(mockedLogger)
 
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, '12345')
                 const response = await foundationsApiService.get(requestConfiguration)
@@ -49,10 +51,7 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(400, { 'bad': 'request' })
 
-                let mockedLogger = {
-                    error: sinon.spy()
-                }
-
+                const mockedLogger = buildMockLogger()
                 const foundationsApiService = new FoundationsApiService(mockedLogger)
 
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`)
@@ -72,10 +71,7 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(500, { 'internal': 'server error' })
 
-                let mockedLogger = {
-                    error: sinon.spy()
-                }
-
+                const mockedLogger = buildMockLogger()
                 const foundationsApiService = new FoundationsApiService(mockedLogger)
 
                 // Should log error, but not rethrow as the base does
@@ -98,6 +94,7 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(200, { 'test': 'pass' })
 
+                const mockedLogger = buildMockLogger()
                 const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
                 const mockedLog4js = {
                     getLogger: function (logName) {
@@ -108,7 +105,7 @@ describe('FoundationsApi.Service', function () {
                     }
                 }
                 const protectiveMonitoringService = new ProtectiveMonitoringService(mockedLog4js)
-                const foundationsApiService = new FoundationsApiService({}, protectiveMonitoringService)
+                const foundationsApiService = new FoundationsApiService(mockedLogger, protectiveMonitoringService)
 
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, '12345')
                 const responseOptionsNoProtectiveMonitoring = {}
@@ -130,6 +127,7 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(200, { 'test': 'pass' })
 
+                const mockedLogger = buildMockLogger()
                 const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
                 const mockedLog4js = {
                     getLogger: function (logName) {
@@ -140,7 +138,7 @@ describe('FoundationsApi.Service', function () {
                     }
                 }
                 const protectiveMonitoringService = new ProtectiveMonitoringService(mockedLog4js)
-                const foundationsApiService = new FoundationsApiService({}, protectiveMonitoringService)
+                const foundationsApiService = new FoundationsApiService(mockedLogger, protectiveMonitoringService)
 
                 const requestConfiguration = buildFoundationsApiRequestConfig(`${getDomain}${getUri}`, null, null, '12345')
 
@@ -173,10 +171,7 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(400, { 'bad': 'request' })
 
-                let mockedLogger = {
-                    error: sinon.spy()
-                }
-
+                const mockedLogger = buildMockLogger()
                 const mockedPmLogger = { info: sinon.spy(), error: sinon.spy() }
                 const mockedLog4js = {
                     getLogger: function (logName) {
@@ -223,10 +218,7 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(400, { 'bad': 'request' })
 
-                let mockedLogger = {
-                    error: sinon.spy()
-                }
-
+                const mockedLogger = buildMockLogger()
                 const successMonitoringOptions = buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
 
                 const foundationsApiService = new FoundationsApiService(mockedLogger)
@@ -244,10 +236,7 @@ describe('FoundationsApi.Service', function () {
                     .get(getUri)
                     .reply(400, { 'bad': 'request' })
 
-                let mockedLogger = {
-                    error: sinon.spy()
-                }
-
+                const mockedLogger = buildMockLogger()
                 const exceptionMonitoringOptions = buildProtectiveMonitoringOptions('TEST_123', 'Testing protective monitoring')
 
                 const foundationsApiService = new FoundationsApiService(mockedLogger)
@@ -271,7 +260,8 @@ describe('FoundationsApi.Service', function () {
                 .get(pingUri)
                 .reply(200, { 'test': 'pass' })
 
-            const foundationsApiService = new FoundationsApiService({})
+            const mockedLogger = buildMockLogger()
+            const foundationsApiService = new FoundationsApiService(mockedLogger)
 
             const response = await foundationsApiService.healthPing(pingDomain, '12345')
 
@@ -280,6 +270,8 @@ describe('FoundationsApi.Service', function () {
             checkResponseStatusCode(response, 200)
 
             checkResponseData(response, 'test', 'pass')
+
+            expect(mockedLogger.debug.calledTwice).to.be.true
         })
 
         it('should return 400 response, correct data, logged error', async function () {
@@ -287,10 +279,7 @@ describe('FoundationsApi.Service', function () {
                 .get(pingUri)
                 .reply(400, { 'bad': 'request' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
             const response = await foundationsApiService.healthPing(pingDomain)
@@ -298,6 +287,8 @@ describe('FoundationsApi.Service', function () {
             checkResponseStatusCode(response, 400)
 
             checkResponseData(response, 'bad', 'request')
+
+            expect(mockedLogger.debug.calledTwice).to.be.true
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]
@@ -309,10 +300,7 @@ describe('FoundationsApi.Service', function () {
                 .get(pingUri)
                 .reply(500, { 'internal': 'server error' })
 
-            let mockedLogger = {
-                error: sinon.spy()
-            }
-
+            const mockedLogger = buildMockLogger()
             const foundationsApiService = new FoundationsApiService(mockedLogger)
 
             // Should log error, but not rethrow as the base does
@@ -321,6 +309,8 @@ describe('FoundationsApi.Service', function () {
             checkResponseStatusCode(response, 500)
 
             checkResponseData(response, 'internal', 'server error')
+
+            expect(mockedLogger.debug.calledTwice).to.be.true
 
             expect(mockedLogger.error.calledOnce).to.be.true
             const loggedError = mockedLogger.error.firstCall.args[0]

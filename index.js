@@ -11,6 +11,9 @@ import {
     buildFoundationsApiResponseOptions,
     returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
+import { logRequestInfo, logStandardError } from './common/logging-helpers'
+import { isHealthCheckRequest } from './common/request-helpers'
+import { isHealthUrl } from './common/url-helpers'
 
 export {
     auditCodeEnum,
@@ -32,5 +35,11 @@ export {
     throwUnexpectedResponseCodeError,
 
     ProtectiveMonitoringService,
-    buildProtectiveMonitoringOptions
+    buildProtectiveMonitoringOptions,
+
+    logRequestInfo, logStandardError,
+
+    isHealthCheckRequest,
+
+    isHealthUrl
 }
