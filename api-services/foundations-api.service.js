@@ -47,7 +47,7 @@ export class FoundationsApiService extends ApiService {
     }
 
     logException (foundationApiRequestConfig, exception) {
-        this.logApiServiceException(foundationApiRequestConfig.method, foundationApiRequestConfig.url, exception)
+        this.logApiServiceException(foundationApiRequestConfig, exception)
     }
 
     // Protective monitoring
