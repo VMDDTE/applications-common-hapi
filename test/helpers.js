@@ -1,4 +1,5 @@
 import chai from 'chai'
+import sinon from 'sinon'
 const expect = chai.expect
 
 function checkResponseForRequestHeaders (response) {
@@ -62,16 +63,16 @@ function checkResponseData (response, expectedPropertyName, expectedPropertyValu
 }
 
 function checkLoggedErrorDetails (loggedError, expectedStatus, expectedApiServiceUrl, expectedExceptionStartsWith) {
-    expect(loggedError).to.have.property('ErrorStatus')
-    expect(loggedError.ErrorStatus).to.equal(expectedStatus)
+    expect(loggedError).to.have.property('errorStatus')
+    expect(loggedError.errorStatus).to.equal(expectedStatus)
 
-    expect(loggedError).to.have.property('ApiServiceUrl')
-    expect(loggedError.ApiServiceUrl).to.equal(expectedApiServiceUrl)
+    expect(loggedError).to.have.property('apiServiceUrl')
+    expect(loggedError.apiServiceUrl).to.equal(expectedApiServiceUrl)
 
-    expect(loggedError).to.have.property('Exception')
+    expect(loggedError).to.have.property('exception')
 
     const errorMessageStartsWithReqEx = new RegExp(`^${expectedExceptionStartsWith}`)
-    expect(loggedError.Exception).to.match(errorMessageStartsWithReqEx)
+    expect(loggedError.exception).to.match(errorMessageStartsWithReqEx)
 }
 
 function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, auditCode, auditDescription) {
@@ -85,6 +86,14 @@ function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, a
     expect(loggedPmMessage.AuditDescription).to.equal(auditDescription)
 }
 
+function buildMockLogger () {
+    return {
+        debug: sinon.spy(),
+        info: sinon.spy(),
+        error: sinon.spy()
+    }
+}
+
 export {
     checkForCorrelationIdHeader,
     checkResponseForRequestData,
@@ -96,5 +105,7 @@ export {
     checkResponseStatusCode,
     checkResponseData,
     checkLoggedErrorDetails,
-    checkLoggedProtectiveMonitoringDetails
+    checkLoggedProtectiveMonitoringDetails,
+
+    buildMockLogger
 }

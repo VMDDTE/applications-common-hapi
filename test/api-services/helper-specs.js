@@ -240,7 +240,7 @@ describe('Api.Service Helpers', function () {
         })
 
         it('should throw correct error', async function () {
-            await expectThrows(() => returnDataIfSuccessfulOrThrowError({ status: 403 }), 'Unexpected response code \'403\', see log for full details')
+            await expectThrows(() => returnDataIfSuccessfulOrThrowError({ status: 403 }), 'Unexpected response code \'403\', expected \'200\'')
         })
     })
 
@@ -254,7 +254,7 @@ describe('Api.Service Helpers', function () {
         })
 
         it('should throw correct error', async function () {
-            await expectThrows(() => throwUnexpectedResponseCodeError({ status: 403 }), 'Unexpected response code \'403\', see log for full details')
+            await expectThrows(() => throwUnexpectedResponseCodeError({ status: 403 }), 'Unexpected response code \'403\', expected \'200\'')
         })
     })
 })
