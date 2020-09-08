@@ -47,7 +47,6 @@ function buildApiRequestConfig (url, headers, data) {
 }
 
 function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
-
     if (!process.env.COMPONENT) {
         throw new Error('Component is expected in the user environment')
     }
@@ -135,7 +134,7 @@ function returnDataIfSuccessfulOrThrowError (response, successStatusCode = 200) 
 function throwUnexpectedResponseCodeError (response) {
     validateResponse(response)
 
-    console.error(`Unexpected response code ${response.status}, expected ${successStatusCode}), URL: ${response.config.url}`)
+    // console.error(`Unexpected response code ${response.status}, expected ${successStatusCode}), URL: ${response.config.url}`)
     throw new Error(`Unexpected response code '${response.status}', see log for full details`)
 }
 

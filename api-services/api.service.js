@@ -1,6 +1,7 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
 import { validateApiRequestConfig } from './helpers'
+import { isHealthUrl } from '../common/url-helpers'
 
 export class ApiService {
     constructor (logger) {
@@ -59,11 +60,11 @@ export class ApiService {
     async actionRequest (requestConfig, responseOptions) {
         validateApiRequestConfig(requestConfig)
 
-        this.logInfoMessage('BeginRequest', requestConfig.method, requestConfig.url)
+        this.logActionRequest('BeginRequest', requestConfig)
         return await this.axiosClient(requestConfig)
             .then(response => this.processResponse(response, responseOptions))
             .catch(exception => this.processException(exception, requestConfig, responseOptions))
-            .finally(() => this.logInfoMessage('EndRequest', requestConfig.method, requestConfig.url))
+            .finally(() => this.logActionRequest('EndRequest', requestConfig))
     }
 
     processResponse (response, _responseOptions) {
@@ -77,11 +78,17 @@ export class ApiService {
         throw exception
     }
 
-    logInfoMessage (message, httpMethod, url) {
-        this.logger.info({
-            'Message': message,
-            'ApiServiceUrl': `[${httpMethod.toUpperCase()}] ${url}`
-        })
+    logActionRequest (actionMessage, requestConfig) {
+        const httpMethod = requestConfig.method
+        const url = requestConfig.url
+        const logMessage = { [actionMessage]: `[${httpMethod.toUpperCase()}] ${url}` }
+
+        // We only want to log health check endpoints as debug
+        if (isHealthUrl(url)) {
+            this.logger.debug(logMessage)
+        } else {
+            this.logger.info(logMessage)
+        }
     }
 
     logApiServiceException (httpMethod, url, exception) {
