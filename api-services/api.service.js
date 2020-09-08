@@ -58,9 +58,12 @@ export class ApiService {
 
     async actionRequest (requestConfig, responseOptions) {
         validateApiRequestConfig(requestConfig)
+
+        this.logInfoMessage('BeginRequest', requestConfig.method, requestConfig.url)
         return await this.axiosClient(requestConfig)
             .then(response => this.processResponse(response, responseOptions))
             .catch(exception => this.processException(exception, requestConfig, responseOptions))
+            .finally(() => this.logInfoMessage('EndRequest', requestConfig.method, requestConfig.url))
     }
 
     processResponse (response, _responseOptions) {
@@ -72,6 +75,13 @@ export class ApiService {
         this.logApiServiceException(requestConfig.method, requestConfig.url, exception)
         // Because we are throwing another exception here (correct for generic api!?), we will need to use catch everywhere its used
         throw exception
+    }
+
+    logInfoMessage (message, httpMethod, url) {
+        this.logger.info({
+            'Message': message,
+            'ApiServiceUrl': `[${httpMethod.toUpperCase()}] ${url}`
+        })
     }
 
     logApiServiceException (httpMethod, url, exception) {
