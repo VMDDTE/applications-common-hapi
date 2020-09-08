@@ -1,4 +1,4 @@
-import { isHealthUrl } from '../common/helpers'
+import { isHealthUrl } from './url-helpers'
 
 function isHealthCheckRequest (request) {
     return isHealthUrl(request.path)
