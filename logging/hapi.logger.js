@@ -1,7 +1,7 @@
-import { cron } from 'node-cron'
-import { path } from 'path'
-import { fs } from 'fs'
-import { simpleNodeLogger } from 'simple-node-logger'
+import cron from 'node-cron'
+import path from 'path'
+import fs from 'fs'
+import simpleNodeLogger from 'simple-node-logger'
 
 export class HapiLogger {
     constructor (config, logDir = 'logs') {
