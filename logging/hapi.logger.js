@@ -41,7 +41,11 @@ export class HapiLogger {
 }
 
 const scheduleLogDeletion = (log, logDir, service, nameOffset) => {
-    cron.schedule('0 0 * * *', () => {
+    const cronSchedule = '0 0 * * *'
+    // We have the log at this point, but force to console
+    console.info(`Cron scheduling deletion of old log files: '${cronSchedule}'`)
+
+    cron.schedule(cronSchedule, () => {
         deleteOldLogs(log, logDir, service, nameOffset)
     })
 }
