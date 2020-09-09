@@ -16,6 +16,7 @@ export class HapiLogger {
         const nameOffset = serviceName.length + 1
 
         if (this.requiresFileLogging) {
+            console.info('Creating rolling file logger')
             if (!fs.existsSync(this.logDir)) {
                 fs.mkdirSync(this.logDir)
             }
@@ -31,7 +32,7 @@ export class HapiLogger {
             scheduleLogDeletion(rollingFileLogger, this.logDir, serviceName, nameOffset)
             return rollingFileLogger
         } else {
-            // This is a console logger
+            console.info('Creating console logger')
             const simpleLogger = simpleNodeLogger.createSimpleLogger()
             simpleLogger.setLevel(this.logLevel)
             return simpleLogger
