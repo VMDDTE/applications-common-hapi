@@ -14,6 +14,7 @@ import { buildProtectiveMonitoringOptions } from './services/helpers'
 import { logRequestInfo, logStandardError } from './common/logging-helpers'
 import { isHealthCheckRequest } from './common/request-helpers'
 import { isHealthUrl } from './common/url-helpers'
+import { HapiLogger } from './logging/hapi.logger'
 
 export {
     auditCodeEnum,
@@ -41,5 +42,7 @@ export {
 
     isHealthCheckRequest,
 
-    isHealthUrl
+    isHealthUrl,
+
+    HapiLogger
 }
