@@ -87,5 +87,3 @@ const deleteFile = (log, logDir, file) => {
             log.info('deleted log file: ' + file)
         })
 }
-
-// module.exports.setupLogging = setupLogging
