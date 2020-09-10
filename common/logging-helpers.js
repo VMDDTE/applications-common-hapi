@@ -1,9 +1,10 @@
 /* global log */
-import { isHealthCheckRequest } from './request-helpers'
+import { isHealthCheckRequest, extractUrl } from './request-helpers'
 
-function logRequestInfo (hapiRequest, organisationReference, loggedInUserId) {
+function logRequestInfo (hapiRequest, message, organisationReference, loggedInUserId) {
     const logMessage = buildBasicLogMessage(getCorrelationIdFromHapiRequest(hapiRequest))
-    logMessage.path = hapiRequest.path
+    logMessage.message = message
+    logMessage.url = buildLoggingUrl(hapiRequest.method, extractUrl(hapiRequest))
 
     if (organisationReference) {
         logMessage.organisationReference = organisationReference
@@ -43,6 +44,10 @@ function logStandardError (hapiRequest, message, statusCode, data, errorMessage)
     log.error(logMessage)
 }
 
+function buildLoggingUrl (httpMethod, url) {
+    return `[${httpMethod.toUpperCase()}] ${url}`
+}
+
 // Not currently exposed
 function getCorrelationIdFromHapiRequest (hapiRequest) {
     return hapiRequest.info.id
@@ -51,5 +56,6 @@ function getCorrelationIdFromHapiRequest (hapiRequest) {
 export {
     logRequestInfo,
     buildBasicLogMessage,
-    logStandardError
+    logStandardError,
+    buildLoggingUrl
 }

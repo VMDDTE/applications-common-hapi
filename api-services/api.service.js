@@ -2,7 +2,7 @@
 import axios from 'axios'
 import { validateApiRequestConfig, extractCorrelationId } from './helpers'
 import { isHealthUrl } from '../common/url-helpers'
-import { buildBasicLogMessage } from '../common/logging-helpers'
+import { buildBasicLogMessage, buildLoggingUrl } from '../common/logging-helpers'
 
 export class ApiService {
     constructor (logger) {
@@ -85,7 +85,7 @@ export class ApiService {
         const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
 
         logMessage.message = actionMessage
-        logMessage.apiServiceUrl = this.buildApiServiceUrl(httpMethod, url)
+        logMessage.apiServiceUrl = this.buildLoggingUrl(httpMethod, url)
 
         // We only want to log health check endpoints as debug
         if (isHealthUrl(url)) {
@@ -101,14 +101,10 @@ export class ApiService {
 
         const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
         logMessage.message = 'ApiService Exception'
-        logMessage.apiServiceUrl = this.buildApiServiceUrl(httpMethod, url)
+        logMessage.apiServiceUrl = this.buildLoggingUrl(httpMethod, url)
         logMessage.errorStatus = exception.response ? exception.response.status : 'No Response'
         logMessage.exception = exception
 
         this.logger.error(logMessage)
-    }
-
-    buildApiServiceUrl (httpMethod, url) {
-        return `[${httpMethod.toUpperCase()}] ${url}`
     }
 }
