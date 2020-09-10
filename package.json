@@ -51,6 +51,10 @@
   },
   "homepage": "https://github.com/VMDDTE/applications-common-hapi#readme",
   "dependencies": {
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "fs": "0.0.1-security",
+    "node-cron": "^2.0.3",
+    "path": "^0.12.7",
+    "simple-node-logger": "^18.12.24"
   }
 }
