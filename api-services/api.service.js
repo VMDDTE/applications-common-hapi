@@ -85,7 +85,7 @@ export class ApiService {
         const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
 
         logMessage.message = actionMessage
-        logMessage.apiServiceUrl = this.buildLoggingUrl(httpMethod, url)
+        logMessage.apiServiceUrl = buildLoggingUrl(httpMethod, url)
 
         // We only want to log health check endpoints as debug
         if (isHealthUrl(url)) {
@@ -101,7 +101,7 @@ export class ApiService {
 
         const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
         logMessage.message = 'ApiService Exception'
-        logMessage.apiServiceUrl = this.buildLoggingUrl(httpMethod, url)
+        logMessage.apiServiceUrl = buildLoggingUrl(httpMethod, url)
         logMessage.errorStatus = exception.response ? exception.response.status : 'No Response'
         logMessage.exception = exception
 
