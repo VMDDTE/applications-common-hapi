@@ -5,7 +5,7 @@ function isHealthCheckRequest (hapiRequest) {
 }
 
 function extractUrl (hapiRequest) {
-    return `${hapiRequest.info.uri}/${hapiRequest.path}`
+    return `${hapiRequest.connection.info.protocol}://${hapiRequest.info.host}/${hapiRequest.path}`
 }
 
 export {
