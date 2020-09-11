@@ -1,9 +1,14 @@
 import { isHealthUrl } from './url-helpers'
 
-function isHealthCheckRequest (request) {
-    return isHealthUrl(request.path)
+function isHealthCheckRequest (hapiRequest) {
+    return isHealthUrl(hapiRequest.path)
+}
+
+function extractUrl (hapiRequest) {
+    return `${hapiRequest.server.info.uri}/${hapiRequest.path}`
 }
 
 export {
-    isHealthCheckRequest
+    isHealthCheckRequest,
+    extractUrl
 }
