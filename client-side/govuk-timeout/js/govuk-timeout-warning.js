@@ -8,8 +8,8 @@
   typeof exports === 'object' && typeof module !== 'undefined'
     ? factory(exports)
     : typeof define === 'function' && define.amd
-    ? define('GOVUKFrontend', ['exports'], factory)
-    : factory((global.GOVUKFrontend = {}));
+    ? define('GOVUKFrontendTimeout', ['exports'], factory)
+    : factory((global.GOVUKFrontendTimeout = {}));
 })(this, function(exports) {
   'use strict';
 
@@ -28,6 +28,7 @@
   }
 
   function TimeoutWarning($module) {
+    console.log($module)
     this.$module = $module;
     this.$lastFocusedEl = null;
     this.$closeButton = $module.querySelector('.js-dialog-close');
@@ -84,6 +85,7 @@
 
     // Debugging tip: This event doesn't kick in in Chrome if you have Inspector panel open and have clicked on it
     // as it is now the active element. Click on the window to make it active before moving to another tab.
+    console.log('hello')
     window.addEventListener('focus', this.checkIfShouldHaveTimedOut.bind(this));
   };
 
@@ -150,6 +152,7 @@
     // User could be interacting with site in 2nd tab
     // Update time left accordingly
     if (!this.isDialogOpen()) {
+      console.log('opening module')
       document.querySelector('body').classList.add(this.overLayClass);
       this.saveLastFocusedEl();
       this.makePageContentInert();
@@ -553,7 +556,7 @@
     return words.reverse().join(' ');
   };
 
-  function initAll(options) {
+  function initTimeout(options) {
     // Set the options to an empty object by default if no options are passed.
     options = typeof options !== 'undefined' ? options : {};
 
@@ -569,6 +572,6 @@
     });
   }
 
-  exports.initAll = initAll;
+  exports.initTimeout = initTimeout;
   exports.TimeoutWarning = TimeoutWarning;
 });
