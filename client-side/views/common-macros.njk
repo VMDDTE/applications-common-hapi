@@ -1,0 +1,43 @@
+{% macro timeoutDialog(viewText, crmBasePath, idlePeriod, visiblePeriod) %}
+    <dialog
+            class="govuk-timeout-warning dialog"
+            data-module="govuk-timeout-warning"
+            id="js-timeout-warning"
+            data-minutes-idle-timeout="{{ idlePeriod }}"
+            data-minutes-modal-visible="{{ visiblePeriod }}"
+            data-url-redirect="{{ crmBasePath }}/timeout"
+            data-warning-text1="{{ viewText.timeout_warning1 }} "
+            data-warning-text2=""
+            data-warning-text3=""
+            data-warning-minute="{{ viewText.timeout_minute }}"
+            data-warning-second="{{ viewText.timeout_second }}"
+            data-warning-redirect="{{ viewText.timeout_redirect }}"
+            role="dialog"
+            aria-live="polite"
+            aria-labelledby="dialog-title"
+            aria-describedby="at-timer"
+    >
+        <h1 id="dialog-title" class="govuk-heading-l">
+            {{ viewText.timeout_header }}
+        </h1>
+        <div class="govuk-body">
+            <div class="timer" aria-hidden="true" aria-relevant="additions"></div>
+            <div
+                    class="at-timer govuk-visually-hidden"
+                    role="status"
+                    id="at-timer"
+            ></div>
+        </div>
+        <button
+                class="govuk-button dialog-button js-dialog-close"
+                data-module="govuk-button"
+        >
+            {{ viewText.continue }}
+        </button>
+        {{ signoutAnchor(crmBasePath, viewText.timeout_sign_out) }}
+    </dialog>
+{% endmacro %}
+
+{% macro signoutAnchor(basePath, text, css) %}
+    <a class="govuk-link" href="{{basePath}}/logout?backToPath={{basePath}}/finaliselogout" data-hook="sign_out_link" style="{{ css }}">{{ text }}</a>
+{% endmacro %}
