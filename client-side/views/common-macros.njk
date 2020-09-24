@@ -1,10 +1,12 @@
 {% macro timeoutDialog(viewText, crmBasePath, idlePeriod, visiblePeriod) %}
+    {% set defaultIdlePeriod = 15 %}
+    {% set defaultVisiblePeriod = 2 %}
     <dialog
         class="govuk-timeout-warning dialog"
         data-module="govuk-timeout-warning"
         id="js-timeout-warning"
-        data-minutes-idle-timeout="{{ idlePeriod }}"
-        data-minutes-modal-visible="{{ visiblePeriod }}"
+        data-minutes-idle-timeout="{{ idlePeriod or defaultIdlePeriod }}"
+        data-minutes-modal-visible="{{ visiblePeriod or defaultVisiblePeriod }}"
         data-url-redirect="{{ crmBasePath }}/timeout"
         data-warning-text1="{{ viewText.timeout_warning1 }} "
         data-warning-text2=""
@@ -36,6 +38,30 @@
         </button>
         {{ signoutAnchor(crmBasePath, viewText.timeout_sign_out) }}
     </dialog>
+{% endmacro %}
+
+{% macro scriptIncludes(assetPath, activateTimeout) %}
+    <script src="{{ assetPath }}/all.js"></script>
+    {% if activateTimeout %}
+        <script src="{{ assetPath }}/govuk-dialog-polyfill.js"></script>
+        <script src="{{ assetPath }}/govuk-timeout-warning.js"></script>
+    {% endif %}
+    <script>
+      (function() {
+        if (window.GOVUKFrontend) {
+          window.GOVUKFrontend.initAll()
+        } else {
+          console.error('Could not find window.GOVUKFrontend');
+        }
+    {% if activateTimeout %}
+        if (window.GOVUKFrontendTimeout) {
+          window.GOVUKFrontendTimeout.initTimeout()
+        } else {
+          console.error('Could not find window.GOVUKFrontendTimeout');
+        }
+    {% endif %}
+      })();
+    </script>
 {% endmacro %}
 
 {% macro signoutAnchor(basePath, text, css) %}
