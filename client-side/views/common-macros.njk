@@ -36,7 +36,7 @@
         >
             {{ viewText.continue }}
         </button>
-        {{ signoutAnchor(crmBasePath, viewText.timeout_sign_out, 'timeout_sign_out') }}
+        {{ signoutAnchor(crmBasePath, viewText.timeout_sign_out, '', 'timeout_sign_out') }}
     </dialog>
 {% endmacro %}
 
@@ -64,6 +64,15 @@
     </script>
 {% endmacro %}
 
-{% macro signoutAnchor(basePath, text, dataHook, css) %}
-    <a class="govuk-link" href="{{basePath}}/logout?backToPath={{basePath}}/finaliselogout" data-hook="{{ dataHook }}" style="{{ css }}">{{ text }}</a>
+{% macro signoutAnchor(basePath, text, css, dataHook) %}
+    {% set styleFragment = '' %}
+    {% if css %}
+        {% set styleFragment = 'style="' + css + '"' %}
+    {% endif %}
+    <a
+        class="govuk-link"
+        href="{{basePath}}/logout?backToPath={{basePath}}/finaliselogout"
+        data-hook="{{ dataHook or 'sign_out_link' }}"
+        {{ styleFragment }}
+    >{{ text }}</a>
 {% endmacro %}
