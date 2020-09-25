@@ -53,13 +53,13 @@
         } else {
           console.error('Could not find window.GOVUKFrontend');
         }
-          {% if activateTimeout %}
+    {% if activateTimeout %}
         if (window.GOVUKFrontendTimeout) {
           window.GOVUKFrontendTimeout.initTimeout()
         } else {
           console.error('Could not find window.GOVUKFrontendTimeout');
         }
-          {% endif %}
+    {% endif %}
       })();
     </script>
 {% endmacro %}
