@@ -28,7 +28,6 @@
   }
 
   function TimeoutWarning($module) {
-    console.log($module)
     this.$module = $module;
     this.$lastFocusedEl = null;
     this.$closeButton = $module.querySelector('.js-dialog-close');
@@ -85,7 +84,6 @@
 
     // Debugging tip: This event doesn't kick in in Chrome if you have Inspector panel open and have clicked on it
     // as it is now the active element. Click on the window to make it active before moving to another tab.
-    console.log('hello')
     window.addEventListener('focus', this.checkIfShouldHaveTimedOut.bind(this));
   };
 
@@ -152,7 +150,6 @@
     // User could be interacting with site in 2nd tab
     // Update time left accordingly
     if (!this.isDialogOpen()) {
-      console.log('opening module')
       document.querySelector('body').classList.add(this.overLayClass);
       this.saveLastFocusedEl();
       this.makePageContentInert();
@@ -567,9 +564,16 @@
     var $timeoutWarnings = scope.querySelectorAll(
       '[data-module="govuk-timeout-warning"]'
     );
+
+    var timeoutWarningList = [];
+
     nodeListForEach($timeoutWarnings, function($timeoutWarning) {
-      new TimeoutWarning($timeoutWarning).init();
+      var timeoutWarning = new TimeoutWarning($timeoutWarning);
+      timeoutWarning.init();
+      timeoutWarningList.push(timeoutWarning)
     });
+
+    return timeoutWarningList
   }
 
   exports.initTimeout = initTimeout;
