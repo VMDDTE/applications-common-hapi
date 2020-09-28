@@ -1,0 +1,9 @@
+{
+  "timeout_header": "Your session will time out soon",
+  "timeout_warning1": "To keep your information secure you’ll be signed out in",
+  "timeout_minute": "minute",
+  "timeout_second": "second",
+  "timeout_redirect": "You are being redirected",
+  "timeout_stay_signed_in": "Stay signed in",
+  "timeout_sign_out": "or sign out now"
+}
