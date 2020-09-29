@@ -34,7 +34,7 @@
             class="govuk-button dialog-button js-dialog-close"
             data-module="govuk-button"
         >
-            {{ viewText.continue }}
+            {{ viewText.timeout_stay_signed_in }}
         </button>
         {{ signoutAnchor(crmBasePath, viewText.timeout_sign_out, '', 'timeout_sign_out') }}
     </dialog>
@@ -65,14 +65,10 @@
 {% endmacro %}
 
 {% macro signoutAnchor(basePath, text, css, dataHook) %}
-    {% set styleFragment = '' %}
-    {% if css %}
-        {% set styleFragment = 'style="' + css + '"' %}
-    {% endif %}
     <a
         class="govuk-link"
         href="{{basePath}}/logout?backToPath={{basePath}}/finaliselogout"
         data-hook="{{ dataHook or 'sign_out_link' }}"
-        {{ styleFragment }}
+        style="{{ css }}"
     >{{ text }}</a>
 {% endmacro %}
