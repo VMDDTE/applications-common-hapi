@@ -1,7 +1,7 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
 import { validateApiRequestConfig, extractCorrelationId } from './helpers'
-import { isHealthUrl } from '../common/url-helpers'
+import { isHealthUrl } from '../common/url-string.helpers'
 import { buildBasicLogMessage, buildLoggingUrl } from '../common/logging-helpers'
 
 export class ApiService {
