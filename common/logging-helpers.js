@@ -1,5 +1,5 @@
 /* global log */
-import { isHealthCheckRequest, isResourceRequest, extractUrl } from './request.helpers'
+import { isHealthCheckRequest, isResourceRequest, extractUrl } from './hapi-request.helpers'
 
 function logRequestInfo (hapiRequest, message, organisationReference, loggedInUserId) {
     const logMessage = buildBasicLogMessage(getCorrelationIdFromHapiRequest(hapiRequest))

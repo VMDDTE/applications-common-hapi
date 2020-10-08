@@ -1,24 +1,28 @@
 import { isHealthUrl, isResourceUrl } from './url-string.helpers'
 
-function validHapiRequest (hapiRequestUrl) {
-    if (!hapiRequestUrl) {
+function validateHapiRequest (hapiRequest) {
+    if (!hapiRequest) {
+        throw new Error('Hapi request is required')
+    }
+
+    if (!hapiRequest.hasOwnProperty('url')) {
         throw new Error('Hapi request url is required')
     }
 
-    if (!hapiRequestUrl.hasOwnProperty('pathname')) {
+    if (!hapiRequest.url.hasOwnProperty('pathname')) {
         throw new Error('Hapi request url requires a \'pathname\' property')
     }
 
-    return { url: hapiRequestUrl.pathname }
+    return { url: hapiRequest.url.pathname }
 }
 
 function isHealthCheckRequest (hapiRequest) {
-    const { url } = validHapiRequest(hapiRequest)
+    const { url } = validateHapiRequest(hapiRequest)
     return isHealthUrl(url)
 }
 
 function isResourceRequest (hapiRequest) {
-    const { url } = validHapiRequest(hapiRequest)
+    const { url } = validateHapiRequest(hapiRequest)
     return isResourceUrl(url)
 }
 

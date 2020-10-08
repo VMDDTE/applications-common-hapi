@@ -3,22 +3,26 @@
 import { describe, it } from 'mocha'
 import chai from 'chai'
 import { expectThrows } from '../helpers'
-import { isHealthCheckRequest, isResourceRequest } from '../../common/request.helpers'
+import { isHealthCheckRequest, isResourceRequest } from '../../common/hapi-request.helpers'
 
 const expect = chai.expect
 
 function buildHapiRequest (path) {
-    return { pathname: path }
+    return { url: { pathname: path } }
 }
 
-describe('Hapi-Url.Helpers', function () {
+describe('Request.Helper', function () {
     describe('#isHealthCheckRequest', function () {
+        it('should throw error when no hapi request is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest(), 'Hapi request is required')
+        })
+
         it('should throw error when no hapi request url is provided', async function () {
-            await expectThrows(() => isHealthCheckRequest(), 'Hapi request url is required')
+            await expectThrows(() => isHealthCheckRequest({}), 'Hapi request url is required')
         })
 
         it('should throw error when no hapi request url pathname property is present', async function () {
-            await expectThrows(() => isHealthCheckRequest({}), 'Hapi request url requires a \'pathname\' property')
+            await expectThrows(() => isHealthCheckRequest({ url: {} }), 'Hapi request url requires a \'pathname\' property')
         })
 
         it('should return true for health', async function () {
@@ -38,12 +42,16 @@ describe('Hapi-Url.Helpers', function () {
     })
 
     describe('#isResourceRequest', function () {
+        it('should throw error when no hapi request is provided', async function () {
+            await expectThrows(() => isResourceRequest(), 'Hapi request is required')
+        })
+
         it('should throw error when no hapi request url is provided', async function () {
-            await expectThrows(() => isResourceRequest(), 'Hapi request url is required')
+            await expectThrows(() => isHealthCheckRequest({}), 'Hapi request url is required')
         })
 
         it('should throw error when no hapi request url pathname property is present', async function () {
-            await expectThrows(() => isResourceRequest({}), 'Hapi request url requires a \'pathname\' property')
+            await expectThrows(() => isResourceRequest({ url: {} }), 'Hapi request url requires a \'pathname\' property')
         })
 
         it('should return true for assets', async function () {
