@@ -1,5 +1,5 @@
 /* global log */
-import { isHealthCheckRequest, extractUrl } from './request-helpers'
+import { isHealthCheckRequest, isResourceRequest, extractUrl } from './request-helpers'
 
 function logRequestInfo (hapiRequest, message, organisationReference, loggedInUserId) {
     const logMessage = buildBasicLogMessage(getCorrelationIdFromHapiRequest(hapiRequest))
@@ -14,8 +14,11 @@ function logRequestInfo (hapiRequest, message, organisationReference, loggedInUs
         logMessage.loggedInUserId = loggedInUserId
     }
 
-    // We only want to log health check endpoints as debug
-    if (isHealthCheckRequest(hapiRequest)) {
+    // We want to log health check and resources calls as debug
+    const isHealthCheck = isHealthCheckRequest(hapiRequest)
+    const isResourceRequest = isResourceRequest(hapiRequest)
+
+    if (isHealthCheck || isResourceRequest) {
         log.debug(logMessage)
     } else {
         log.info(logMessage)
