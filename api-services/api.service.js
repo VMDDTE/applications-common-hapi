@@ -1,7 +1,7 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
 import { validateApiRequestConfig, extractCorrelationId } from './helpers'
-import { isHealthUrl } from '../common/hapi-url.helpers'
+import { isHealthUrl, isResourceUrl } from '../common/url-string.helpers'
 import { buildBasicLogMessage, buildLoggingUrl } from '../common/logging-helpers'
 
 export class ApiService {
@@ -87,8 +87,8 @@ export class ApiService {
         logMessage.message = actionMessage
         logMessage.apiServiceUrl = buildLoggingUrl(httpMethod, url)
 
-        // We only want to log health check endpoints as debug
-        if (isHealthUrl(url)) {
+        // For health/resource endpoints we want to log as debug
+        if (isHealthUrl(url) || isResourceUrl(url)) {
             this.logger.debug(logMessage)
         } else {
             this.logger.info(logMessage)

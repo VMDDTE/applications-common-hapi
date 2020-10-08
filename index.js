@@ -12,8 +12,8 @@ import {
     returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
 import { logRequestInfo, logStandardError } from './common/logging-helpers'
-import { isHealthCheckRequest, isResourceRequest } from './common/request-helpers'
-import { isHealthUrl, isResourceUrl } from './common/hapi-url.helpers'
+import { isHealthCheckRequest, isResourceRequest } from './common/request.helpers'
+import { isHealthUrl, isResourceUrl } from './common/url-string.helpers'
 import { HapiLogger } from './logging/hapi.logger'
 
 export {
@@ -41,6 +41,8 @@ export {
     logRequestInfo, logStandardError,
 
     isHealthCheckRequest, isResourceRequest,
+
+    isHealthUrl, isResourceUrl,
 
     HapiLogger
 }
