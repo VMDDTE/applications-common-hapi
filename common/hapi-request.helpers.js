@@ -5,11 +5,11 @@ function validateHapiRequest (hapiRequest) {
         throw new Error('Hapi request is required')
     }
 
-    if (!hapiRequest.hasOwnProperty('url')) {
+    if (!hapiRequest.url) {
         throw new Error('Hapi request url is required')
     }
 
-    if (!hapiRequest.url.hasOwnProperty('pathname')) {
+    if (!hapiRequest.url.pathname) {
         throw new Error('Hapi request url requires a \'pathname\' property')
     }
 
