@@ -62,12 +62,16 @@ function checkResponseData (response, expectedPropertyName, expectedPropertyValu
     expect(response.data[expectedPropertyName]).to.equal(expectedPropertyValue)
 }
 
-function checkLoggedErrorDetails (loggedError, expectedStatus, expectedApiServiceUrl, expectedExceptionStartsWith) {
+function checkLoggedErrorDetails (loggedStandardErrorArgs, expectedHttpMethod, expectedUrl, expectedStatus, expectedExceptionStartsWith) {
+    const httpMethod = loggedStandardErrorArgs[1]
+    expect(httpMethod).to.equal(expectedHttpMethod)
+
+    const url = loggedStandardErrorArgs[2]
+    expect(url).to.equal(expectedUrl)
+
+    const loggedError = loggedStandardErrorArgs[4]
     expect(loggedError).to.have.property('errorStatus')
     expect(loggedError.errorStatus).to.equal(expectedStatus)
-
-    expect(loggedError).to.have.property('apiServiceUrl')
-    expect(loggedError.apiServiceUrl).to.equal(expectedApiServiceUrl)
 
     expect(loggedError).to.have.property('exception')
 
@@ -88,9 +92,9 @@ function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, a
 
 function buildMockLogger () {
     return {
-        debug: sinon.spy(),
-        info: sinon.spy(),
-        error: sinon.spy()
+        logStandardDebug: sinon.spy(),
+        logStandardInfo: sinon.spy(),
+        logStandardError: sinon.spy()
     }
 }
 
