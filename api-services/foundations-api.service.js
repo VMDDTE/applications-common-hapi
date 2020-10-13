@@ -1,9 +1,10 @@
 import { ApiService } from './api.service'
 import { buildFoundationsApiRequestConfig } from './helpers'
+import { isHealthUrl } from '../common/url-string.helpers'
 
 export class FoundationsApiService extends ApiService {
-    constructor (logger, protectiveMonitoringService) {
-        super(logger)
+    constructor (vmdlogger, protectiveMonitoringService) {
+        super(vmdlogger)
 
         // Should protective monitor service be required?
         this.protectiveMonitoringService = protectiveMonitoringService
@@ -17,6 +18,15 @@ export class FoundationsApiService extends ApiService {
     async healthPing (baseServiceUrl, originatingRequestId) {
         const url = `${baseServiceUrl}/health/ping`
         return await super.get(buildFoundationsApiRequestConfig(url, null, null, originatingRequestId))
+    }
+
+    logActionRequestMessage (correlationId, httpMethod, url, actionMessage, properties) {
+        // We only want to log health check endpoints as debug, this is a foundations concept
+        if (isHealthUrl(url)) {
+            this.vmdLogger.logStandardDebug(correlationId, httpMethod, url, actionMessage, properties)
+        } else {
+            this.vmdLogger.logStandardInfo(correlationId, httpMethod, url, actionMessage, properties)
+        }
     }
 
     // Successful response processing

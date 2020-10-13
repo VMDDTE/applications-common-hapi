@@ -51,6 +51,7 @@
   },
   "homepage": "https://github.com/VMDDTE/applications-common-hapi#readme",
   "dependencies": {
+    "applications-common-logging": "git+https://github.com/VMDDTE/applications-common-logging.git#develop",
     "axios": "^0.19.2",
     "fs": "0.0.1-security",
     "node-cron": "^2.0.3",

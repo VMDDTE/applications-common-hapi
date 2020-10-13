@@ -1,17 +1,19 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
-import { validateApiRequestConfig, extractCorrelationId } from './helpers'
-import { isHealthUrl } from '../common/url-string.helpers'
-import { buildBasicLogMessage, buildLoggingUrl } from '../common/logging-helpers'
+import { validateApiRequestConfig, extractLogMessageInfo } from './helpers'
 
 export class ApiService {
-    constructor (logger) {
-        if (!logger) {
-            throw new Error('ApiService required a logger')
+    constructor (vmdlogger) {
+        if (!vmdlogger) {
+            throw new Error('ApiService requires a VmdLogger')
+        }
+
+        if (typeof vmdlogger.logStandardInfo !== 'function' || typeof vmdlogger.logStandardError !== 'function') {
+            throw new Error('VmdLogger does not provide required methods')
         }
 
         this.axiosClient = axios
-        this.logger = logger
+        this.vmdLogger = vmdlogger
     }
 
     /**
@@ -68,6 +70,16 @@ export class ApiService {
             .finally(() => this.logActionRequest('ApiService EndRequest', requestConfig))
     }
 
+    logActionRequest (actionMessage, requestConfig) {
+        const { correlationId, httpMethod, url } = extractLogMessageInfo(requestConfig)
+        this.logActionRequestMessage(correlationId, httpMethod, url, actionMessage)
+    }
+
+    logActionRequestMessage (correlationId, httpMethod, url, actionMessage, properties) {
+        // Providing an overridable method
+        this.vmdLogger.logStandardInfo(correlationId, httpMethod, url, actionMessage, properties)
+    }
+
     processResponse (response, _responseOptions) {
         // The default is simply to return the response, but this way allows us to override this behaviour
         return response
@@ -79,32 +91,14 @@ export class ApiService {
         throw exception
     }
 
-    logActionRequest (actionMessage, requestConfig) {
-        const httpMethod = requestConfig.method
-        const url = requestConfig.url
-        const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
-
-        logMessage.message = actionMessage
-        logMessage.apiServiceUrl = buildLoggingUrl(httpMethod, url)
-
-        // We only want to log health check endpoints as debug
-        if (isHealthUrl(url)) {
-            this.logger.debug(logMessage)
-        } else {
-            this.logger.info(logMessage)
-        }
-    }
-
     logApiServiceException (requestConfig, exception) {
-        const httpMethod = requestConfig.method
-        const url = requestConfig.url
+        const { correlationId, httpMethod, url } = extractLogMessageInfo(requestConfig)
+        const actionMessage = 'ApiService Exception'
+        // We may want to decide on a consistent error format, but confirmed with Paul a properties object works
+        const properties = {}
+        properties.errorStatus = exception.response ? exception.response.status : 'No Response'
+        properties.exception = exception
 
-        const logMessage = buildBasicLogMessage(extractCorrelationId(requestConfig))
-        logMessage.message = 'ApiService Exception'
-        logMessage.apiServiceUrl = buildLoggingUrl(httpMethod, url)
-        logMessage.errorStatus = exception.response ? exception.response.status : 'No Response'
-        logMessage.exception = exception
-
-        this.logger.error(logMessage)
+        this.vmdLogger.logStandardError(correlationId, httpMethod, url, actionMessage, properties)
     }
 }

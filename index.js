@@ -11,10 +11,9 @@ import {
     buildFoundationsApiResponseOptions,
     returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
-import { logRequestInfo, logStandardError } from './common/logging-helpers'
 import { isHealthCheckRequest, isResourceRequest } from './common/hapi-request.helpers'
 import { isHealthUrl, isResourceUrl } from './common/url-string.helpers'
-import { HapiLogger } from './logging/hapi.logger'
+import VmdLogger from 'applications-common-logging'
 
 export {
     auditCodeEnum,
@@ -38,11 +37,9 @@ export {
     ProtectiveMonitoringService,
     buildProtectiveMonitoringOptions,
 
-    logRequestInfo, logStandardError,
-
     isHealthCheckRequest, isResourceRequest,
 
     isHealthUrl, isResourceUrl,
 
-    HapiLogger
+    VmdLogger
 }

@@ -142,6 +142,18 @@ function extractCorrelationId (requestConfiguration) {
     return requestConfiguration.headers[httpHeadersEnum.CORRELATION_ID]
 }
 
+function extractLogMessageInfo (requestConfiguration) {
+    const correlationId = extractCorrelationId(requestConfiguration)
+    const httpMethod = requestConfiguration.method
+    const url = requestConfiguration.url
+
+    return {
+        correlationId,
+        httpMethod,
+        url
+    }
+}
+
 export {
     checkForRequestConfiguration,
 
@@ -159,5 +171,6 @@ export {
     returnDataIfSuccessfulOrThrowError,
     throwUnexpectedResponseCodeError,
 
-    extractCorrelationId
+    extractCorrelationId,
+    extractLogMessageInfo
 }

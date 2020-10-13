@@ -1,3 +1,4 @@
+/* global beforeEach */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-new */
 import { describe, it } from 'mocha'
@@ -61,9 +62,9 @@ describe('FoundationsApi.Service', function () {
 
                 checkResponseData(response, 'bad', 'request')
 
-                expect(mockedLogger.error.calledOnce).to.be.true
-                const loggedError = mockedLogger.error.firstCall.args[0]
-                checkLoggedErrorDetails(loggedError, 400, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 400')
+                expect(mockedLogger.logStandardError.calledOnce).to.be.true
+                const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+                checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${getDomain}${getUri}`, 400, 'Error: Request failed with status code 400')
             })
 
             it('should return 500 response, correct data, logged error', async function () {
@@ -82,9 +83,9 @@ describe('FoundationsApi.Service', function () {
 
                 checkResponseData(response, 'internal', 'server error')
 
-                expect(mockedLogger.error.calledOnce).to.be.true
-                const loggedError = mockedLogger.error.firstCall.args[0]
-                checkLoggedErrorDetails(loggedError, 500, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 500')
+                expect(mockedLogger.logStandardError.calledOnce).to.be.true
+                const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+                checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${getDomain}${getUri}`, 500, 'Error: Request failed with status code 500')
             })
         })
 
@@ -197,9 +198,9 @@ describe('FoundationsApi.Service', function () {
 
                 checkResponseData(response, 'bad', 'request')
 
-                expect(mockedLogger.error.calledOnce).to.be.true
-                const loggedError = mockedLogger.error.firstCall.args[0]
-                checkLoggedErrorDetails(loggedError, 400, `[GET] ${getDomain}${getUri}`, 'Error: Request failed with status code 400')
+                expect(mockedLogger.logStandardError.calledOnce).to.be.true
+                const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+                checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${getDomain}${getUri}`, 400, 'Error: Request failed with status code 400')
 
                 expect(mockedPmLogger.info.calledOnce).to.be.false
                 expect(mockedPmLogger.error.calledOnce).to.be.true
@@ -271,7 +272,7 @@ describe('FoundationsApi.Service', function () {
 
             checkResponseData(response, 'test', 'pass')
 
-            expect(mockedLogger.debug.calledTwice).to.be.true
+            expect(mockedLogger.logStandardDebug.calledTwice).to.be.true
         })
 
         it('should return 400 response, correct data, logged error', async function () {
@@ -288,11 +289,11 @@ describe('FoundationsApi.Service', function () {
 
             checkResponseData(response, 'bad', 'request')
 
-            expect(mockedLogger.debug.calledTwice).to.be.true
+            expect(mockedLogger.logStandardDebug.calledTwice).to.be.true
 
-            expect(mockedLogger.error.calledOnce).to.be.true
-            const loggedError = mockedLogger.error.firstCall.args[0]
-            checkLoggedErrorDetails(loggedError, 400, `[GET] ${pingDomain}${pingUri}`, 'Error: Request failed with status code 400')
+            expect(mockedLogger.logStandardError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${pingDomain}${pingUri}`, 400, 'Error: Request failed with status code 400')
         })
 
         it('should return 500 response, correct data, logged error', async function () {
@@ -310,11 +311,11 @@ describe('FoundationsApi.Service', function () {
 
             checkResponseData(response, 'internal', 'server error')
 
-            expect(mockedLogger.debug.calledTwice).to.be.true
+            expect(mockedLogger.logStandardDebug.calledTwice).to.be.true
 
-            expect(mockedLogger.error.calledOnce).to.be.true
-            const loggedError = mockedLogger.error.firstCall.args[0]
-            checkLoggedErrorDetails(loggedError, 500, `[GET] ${pingDomain}${pingUri}`, 'Error: Request failed with status code 500')
+            expect(mockedLogger.logStandardError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${pingDomain}${pingUri}`, 500, 'Error: Request failed with status code 500')
         })
     })
 })
