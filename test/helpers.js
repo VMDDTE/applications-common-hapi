@@ -94,11 +94,7 @@ function buildMockLogger () {
     return {
         logStandardDebug: sinon.spy(),
         logStandardInfo: sinon.spy(),
-        logStandardError: sinon.spy(),
-
-        debug: sinon.spy(),
-        info: sinon.spy(),
-        error: sinon.spy()
+        logStandardError: sinon.spy()
     }
 }
 

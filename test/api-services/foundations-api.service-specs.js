@@ -23,6 +23,19 @@ describe('FoundationsApi.Service', function () {
         process.env.COMPONENT = 'TESTCOMPONENT'
     })
 
+    describe('#ctor', function () {
+        // Base (ApiService) ctor is fully tested, only need to test a method check in foundations
+
+        it('should error with logger passed that does not conform', function () {
+            expect(() => {
+                new FoundationsApiService({
+                    logStandardInfo: sinon.spy(),
+                    logStandardError: sinon.spy()
+                })
+            }).to.throw('VmdLogger does not provide required methods for FoundationsApiService')
+        })
+    })
+
     describe('#get (passed through to )', function () {
         const getDomain = 'http://test-get.foundationsapiservice.com'
         const getUri = '/api/1'
