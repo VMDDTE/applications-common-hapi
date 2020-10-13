@@ -1,4 +1,3 @@
-/* global beforeEach */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-new */
 import { describe, it } from 'mocha'

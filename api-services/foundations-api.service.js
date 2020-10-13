@@ -6,6 +6,9 @@ export class FoundationsApiService extends ApiService {
     constructor (vmdlogger, protectiveMonitoringService) {
         super(vmdlogger)
 
+        if (typeof vmdlogger.logStandardDebug !== 'function') {
+            throw new Error('VmdLogger does not provide required methods for FoundationsApiService')
+        }
         // Should protective monitor service be required?
         this.protectiveMonitoringService = protectiveMonitoringService
     }
