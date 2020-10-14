@@ -11,7 +11,7 @@ import {
     buildFoundationsApiResponseOptions,
     returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
-import { isHealthCheckRequest, isResourceRequest } from './common/hapi-request.helpers'
+import { isHealthCheckRequest, isResourceRequest, logRequestInfo } from './common/hapi-request.helpers'
 import { isHealthUrl, isResourceUrl } from './common/url-string.helpers'
 
 export {
@@ -38,5 +38,5 @@ export {
 
     isHealthCheckRequest, isResourceRequest,
 
-    isHealthUrl, isResourceUrl
+    isHealthUrl, isResourceUrl, logRequestInfo
 }

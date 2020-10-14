@@ -43,10 +43,6 @@ export function isResourceRequest (hapiRequest) {
     return isResourceUrl(url)
 }
 
-export function extractUrl (hapiRequest) {
-    return `${hapiRequest.server.info.uri}/${hapiRequest.path}`
-}
-
 function extractLogMessageInfoFromHapiRequest (hapiRequest) {
     const { correlationId, httpMethod, url } = validateHapiRequest(hapiRequest)
 
