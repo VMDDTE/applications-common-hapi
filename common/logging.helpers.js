@@ -37,10 +37,12 @@ export function logRequestError (hapiRequest, vmdLogger, actionMessage, errorSta
 
     isTypeOfVmdLogger(vmdLogger)
 
+    errorResponse = errorResponse || {}
+
     const properties = {
-        errorStatusCode,
-        errorData: errorResponse.data,
-        errorMessage: errorResponse.message
+        errorStatusCode: errorStatusCode || 'No error status code',
+        errorData: errorResponse.data || 'No error data',
+        errorMessage: errorResponse.message || 'No error message'
     }
 
     vmdLogger.logStandardError(correlationId, httpMethod, url, actionMessage, properties)
