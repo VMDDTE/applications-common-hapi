@@ -70,13 +70,12 @@ function checkLoggedErrorDetails (loggedStandardErrorArgs, expectedHttpMethod, e
     expect(url).to.equal(expectedUrl)
 
     const loggedError = loggedStandardErrorArgs[4]
-    expect(loggedError).to.have.property('errorStatus')
-    expect(loggedError.errorStatus).to.equal(expectedStatus)
-
-    expect(loggedError).to.have.property('exception')
+    expect(loggedError).to.have.property('errorStatusCode')
+    expect(loggedError.errorStatusCode).to.equal(expectedStatus)
 
     const errorMessageStartsWithReqEx = new RegExp(`^${expectedExceptionStartsWith}`)
-    expect(loggedError.exception).to.match(errorMessageStartsWithReqEx)
+    expect(loggedError).to.have.property('errorMessage')
+    expect(loggedError.errorMessage).to.match(errorMessageStartsWithReqEx)
 }
 
 function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, auditCode, auditDescription) {

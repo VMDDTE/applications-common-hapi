@@ -96,10 +96,8 @@ export class ApiService {
     logApiServiceException (requestConfig, exception) {
         const { correlationId, httpMethod, url } = extractLogMessageInfoFromRequestConfig(requestConfig)
         const actionMessage = 'ApiService Exception'
-        // We may want to decide on a consistent error format, but confirmed with Paul a properties object works
-        const errorResponse = exception.response || {}
         const properties = {
-            errorStatusCode: errorResponse.status || '-',
+            errorStatusCode: exception.response ? exception.response.status || '-' : 'No Response',
             errorMessage: exception
         }
 

@@ -17,6 +17,14 @@ function validateHapiRequest (hapiRequest) {
         throw new Error('Hapi request method is required')
     }
 
+    if (!hapiRequest.server) {
+        throw new Error('Hapi request server is required')
+    }
+
+    if (!hapiRequest.server.info) {
+        throw new Error('Hapi request server info is required')
+    }
+
     if (!hapiRequest.server.info.uri) {
         throw new Error('Hapi request server info uri is required')
     }

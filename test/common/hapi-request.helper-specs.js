@@ -7,22 +7,48 @@ import { isHealthCheckRequest, isResourceRequest } from '../../common/hapi-reque
 
 const expect = chai.expect
 
-function buildHapiRequest (path) {
-    return { url: { pathname: path } }
+function buildHapiRequest (path, method = 'GET') {
+    return {
+        info: { id: '123' },
+        path,
+        // url: { pathname: path },
+        method,
+        server: { info: { uri: path } }
+    }
 }
 
-describe('Request.Helper', function () {
+describe('Hapi-Request.Helper', function () {
     describe('#isHealthCheckRequest', function () {
         it('should throw error when no hapi request is provided', async function () {
             await expectThrows(() => isHealthCheckRequest(), 'Hapi request is required')
         })
 
-        it('should throw error when no hapi request url is provided', async function () {
-            await expectThrows(() => isHealthCheckRequest({}), 'Hapi request url is required')
+        it('should throw error when no hapi request info is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ }), 'Hapi request info is required')
         })
 
-        it('should throw error when no hapi request url pathname property is present', async function () {
-            await expectThrows(() => isHealthCheckRequest({ url: {} }), 'Hapi request url requires a \'pathname\' property')
+        it('should throw error when no hapi request info id is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ info: {} }), 'Hapi request info requires a \'id\' property')
+        })
+
+        it('should throw error when no hapi request method is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ info: { id: '123' } }), 'Hapi request method is required')
+        })
+
+        it('should throw error when no hapi request server is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ info: { id: '123' }, method: 'GET' }), 'Hapi request server is required')
+        })
+
+        it('should throw error when no hapi request server info is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ info: { id: '123' }, method: 'GET', server: {} }), 'Hapi request server info is required')
+        })
+
+        it('should throw error when no hapi request server info uri is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ info: { id: '123' }, method: 'GET', server: { info: {} } }), 'Hapi request server info uri is required')
+        })
+
+        it('should throw error when no hapi request path is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ info: { id: '123' }, method: 'GET', server: { info: { uri: '/test' } } }), 'Hapi request path is required')
         })
 
         it('should return true for health', async function () {
@@ -46,12 +72,32 @@ describe('Request.Helper', function () {
             await expectThrows(() => isResourceRequest(), 'Hapi request is required')
         })
 
-        it('should throw error when no hapi request url is provided', async function () {
-            await expectThrows(() => isHealthCheckRequest({}), 'Hapi request url is required')
+        it('should throw error when no hapi request info is provided', async function () {
+            await expectThrows(() => isResourceRequest({ }), 'Hapi request info is required')
         })
 
-        it('should throw error when no hapi request url pathname property is present', async function () {
-            await expectThrows(() => isResourceRequest({ url: {} }), 'Hapi request url requires a \'pathname\' property')
+        it('should throw error when no hapi request info id is provided', async function () {
+            await expectThrows(() => isResourceRequest({ info: {} }), 'Hapi request info requires a \'id\' property')
+        })
+
+        it('should throw error when no hapi request method is provided', async function () {
+            await expectThrows(() => isResourceRequest({ info: { id: '123' } }), 'Hapi request method is required')
+        })
+
+        it('should throw error when no hapi request server is provided', async function () {
+            await expectThrows(() => isResourceRequest({ info: { id: '123' }, method: 'GET' }), 'Hapi request server is required')
+        })
+
+        it('should throw error when no hapi request server info is provided', async function () {
+            await expectThrows(() => isResourceRequest({ info: { id: '123' }, method: 'GET', server: {} }), 'Hapi request server info is required')
+        })
+
+        it('should throw error when no hapi request server info uri is provided', async function () {
+            await expectThrows(() => isResourceRequest({ info: { id: '123' }, method: 'GET', server: { info: {} } }), 'Hapi request server info uri is required')
+        })
+
+        it('should throw error when no hapi request path is provided', async function () {
+            await expectThrows(() => isHealthCheckRequest({ info: { id: '123' }, method: 'GET', server: { info: { uri: '/test' } } }), 'Hapi request path is required')
         })
 
         it('should return true for assets', async function () {
