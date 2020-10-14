@@ -17,18 +17,19 @@ function validateHapiRequest (hapiRequest) {
         throw new Error('Hapi request method is required')
     }
 
-    if (!hapiRequest.url) {
-        throw new Error('Hapi request url is required')
+    if (!hapiRequest.server.info.uri) {
+        throw new Error('Hapi request server info uri is required')
     }
 
-    if (!hapiRequest.url.pathname) {
-        throw new Error('Hapi request url requires a \'pathname\' property')
+    if (!hapiRequest.path) {
+        // hapiRequest.path hapiRequest.url.pathname always appeared to be the same
+        throw new Error('Hapi request path is required')
     }
 
     return {
         correlationId: hapiRequest.info.id,
         httpMethod: hapiRequest.method,
-        url: hapiRequest.url.pathname
+        url: `${hapiRequest.server.info.uri}${hapiRequest.path}`
     }
 }
 
