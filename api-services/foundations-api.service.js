@@ -3,13 +3,9 @@ import { buildFoundationsApiRequestConfig } from './helpers'
 import { isHealthUrl } from '../common/url-string.helpers'
 
 export class FoundationsApiService extends ApiService {
-    constructor (vmdlogger, protectiveMonitoringService) {
-        super(vmdlogger)
+    constructor (vmdLogger, protectiveMonitoringService) {
+        super(vmdLogger)
 
-        // We dont care what logger is provided as long is it supports logStandardDebug
-        if (typeof vmdlogger.logStandardDebug !== 'function') {
-            throw new Error('VmdLogger does not provide required methods for FoundationsApiService')
-        }
         // Should protective monitor service be required?
         this.protectiveMonitoringService = protectiveMonitoringService
     }

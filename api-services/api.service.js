@@ -1,6 +1,7 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
-import { validateApiRequestConfig, extractLogMessageInfo } from './helpers'
+import { validateApiRequestConfig, extractLogMessageInfoFromRequestConfig } from './helpers'
+import { isTypeOfVmdLogger } from '../common/logger.helpers'
 
 export class ApiService {
     constructor (vmdlogger) {
@@ -9,7 +10,7 @@ export class ApiService {
         }
 
         // We dont care what logger is provided as long is it supports logStandardInfo/logStandardError
-        if (typeof vmdlogger.logStandardInfo !== 'function' || typeof vmdlogger.logStandardError !== 'function') {
+        if (isTypeOfVmdLogger(vmdlogger)) {
             throw new Error('VmdLogger does not provide required methods')
         }
 
@@ -72,7 +73,7 @@ export class ApiService {
     }
 
     logActionRequest (actionMessage, requestConfig) {
-        const { correlationId, httpMethod, url } = extractLogMessageInfo(requestConfig)
+        const { correlationId, httpMethod, url } = extractLogMessageInfoFromRequestConfig(requestConfig)
         this.logActionRequestMessage(correlationId, httpMethod, url, actionMessage)
     }
 
@@ -93,7 +94,7 @@ export class ApiService {
     }
 
     logApiServiceException (requestConfig, exception) {
-        const { correlationId, httpMethod, url } = extractLogMessageInfo(requestConfig)
+        const { correlationId, httpMethod, url } = extractLogMessageInfoFromRequestConfig(requestConfig)
         const actionMessage = 'ApiService Exception'
         // We may want to decide on a consistent error format, but confirmed with Paul a properties object works
         const properties = {
