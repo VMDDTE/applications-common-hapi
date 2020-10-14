@@ -1,5 +1,4 @@
-import { isHealthCheckRequest, isResourceRequest } from './url-string.helpers'
-import { extractLogMessageInfoFromHapiRequest } from './hapi-request.helpers'
+import { extractLogMessageInfoFromHapiRequest, isHealthCheckRequest, isResourceRequest } from './hapi-request.helpers'
 
 // Decide if this is better placed in logging?
 export function isTypeOfVmdLogger (vmdLogger) {
