@@ -1,5 +1,4 @@
 import { isHealthUrl, isResourceUrl } from './url-string.helpers'
-import { isTypeOfVmdLogger } from './logger.helpers'
 
 function validateHapiRequest (hapiRequest) {
     if (!hapiRequest) {
@@ -43,32 +42,12 @@ export function isResourceRequest (hapiRequest) {
     return isResourceUrl(url)
 }
 
-function extractLogMessageInfoFromHapiRequest (hapiRequest) {
+export function extractLogMessageInfoFromHapiRequest (hapiRequest) {
     const { correlationId, httpMethod, url } = validateHapiRequest(hapiRequest)
 
     return {
         correlationId,
         httpMethod,
         url
-    }
-}
-
-export function logRequestInfo (hapiRequest, vmdLogger, actionMessage, properties) {
-    const {
-        correlationId,
-        httpMethod,
-        url
-    } = extractLogMessageInfoFromHapiRequest(hapiRequest)
-
-    isTypeOfVmdLogger(vmdLogger)
-
-    // We want to log health check and resources calls as debug
-    const isHealthCheck = isHealthCheckRequest(hapiRequest)
-    const isResource = isResourceRequest(hapiRequest)
-
-    if (isHealthCheck || isResource) {
-        vmdLogger.logStandardDebug(correlationId, httpMethod, url, actionMessage, properties)
-    } else {
-        vmdLogger.logStandardInfo(correlationId, httpMethod, url, actionMessage, properties)
     }
 }

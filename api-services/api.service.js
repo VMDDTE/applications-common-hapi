@@ -1,7 +1,7 @@
 // Initially designed to be a generic ApiService to handle api calls in a standard way, but using axois
 import axios from 'axios'
 import { validateApiRequestConfig, extractLogMessageInfoFromRequestConfig } from './helpers'
-import { isTypeOfVmdLogger } from '../common/logger.helpers'
+import { isTypeOfVmdLogger } from '../common/logging.helpers'
 
 export class ApiService {
     constructor (vmdlogger) {
