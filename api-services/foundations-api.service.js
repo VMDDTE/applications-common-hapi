@@ -6,6 +6,7 @@ export class FoundationsApiService extends ApiService {
     constructor (vmdlogger, protectiveMonitoringService) {
         super(vmdlogger)
 
+        // We dont care what logger is provided as long is it supports logStandardDebug
         if (typeof vmdlogger.logStandardDebug !== 'function') {
             throw new Error('VmdLogger does not provide required methods for FoundationsApiService')
         }

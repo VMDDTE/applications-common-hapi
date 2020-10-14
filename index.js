@@ -13,7 +13,6 @@ import {
 import { buildProtectiveMonitoringOptions } from './services/helpers'
 import { isHealthCheckRequest, isResourceRequest } from './common/hapi-request.helpers'
 import { isHealthUrl, isResourceUrl } from './common/url-string.helpers'
-import VmdLogger from 'applications-common-logging'
 
 export {
     auditCodeEnum,
@@ -39,7 +38,5 @@ export {
 
     isHealthCheckRequest, isResourceRequest,
 
-    isHealthUrl, isResourceUrl,
-
-    VmdLogger
+    isHealthUrl, isResourceUrl
 }

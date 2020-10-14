@@ -8,6 +8,7 @@ export class ApiService {
             throw new Error('ApiService requires a VmdLogger')
         }
 
+        // We dont care what logger is provided as long is it supports logStandardInfo/logStandardError
         if (typeof vmdlogger.logStandardInfo !== 'function' || typeof vmdlogger.logStandardError !== 'function') {
             throw new Error('VmdLogger does not provide required methods')
         }
