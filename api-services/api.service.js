@@ -97,9 +97,10 @@ export class ApiService {
         const { correlationId, httpMethod, url } = extractLogMessageInfoFromRequestConfig(requestConfig)
         const actionMessage = 'ApiService Exception'
         // We may want to decide on a consistent error format, but confirmed with Paul a properties object works
+        const errorResponse = exception.response || {}
         const properties = {
-            errorStatus: exception.response ? exception.response.status : 'No Response',
-            exception
+            errorStatusCode: errorResponse.status || '-',
+            errorMessage: exception
         }
 
         this.vmdLogger.logStandardError(correlationId, httpMethod, url, actionMessage, properties)

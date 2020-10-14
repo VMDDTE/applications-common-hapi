@@ -40,9 +40,12 @@ export function logRequestError (hapiRequest, vmdLogger, actionMessage, errorSta
     errorResponse = errorResponse || {}
 
     const properties = {
-        errorStatusCode: errorStatusCode || 'No error status code',
-        errorData: errorResponse.data || 'No error data',
-        errorMessage: errorResponse.message || 'No error message'
+        errorStatusCode: errorStatusCode || '-',
+        errorMessage: errorResponse.message || '-'
+    }
+    // Error data seems less common, so only add property of specified
+    if (errorResponse.data) {
+        properties.errorData = errorResponse.data
     }
 
     vmdLogger.logStandardError(correlationId, httpMethod, url, actionMessage, properties)
