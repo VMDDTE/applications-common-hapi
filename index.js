@@ -12,8 +12,8 @@ import {
     returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
 import { isHealthCheckRequest, isResourceRequest } from './common/hapi-request.helpers'
+import { logRequestInfo, logRequestError } from './common/logging.helpers'
 import { isHealthUrl, isResourceUrl } from './common/url-string.helpers'
-import VmdLogger from 'applications-common-logging'
 
 export {
     auditCodeEnum,
@@ -41,5 +41,5 @@ export {
 
     isHealthUrl, isResourceUrl,
 
-    VmdLogger
+    logRequestInfo, logRequestError
 }

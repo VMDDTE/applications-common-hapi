@@ -1,6 +1,6 @@
 import { httpHeadersEnum } from '../enums/http-headers.enum'
 
-function checkForRequestConfiguration (requestConfiguration) {
+export function checkForRequestConfiguration (requestConfiguration) {
     if (!requestConfiguration) {
         throw new Error('Request Config required')
     }
@@ -8,7 +8,7 @@ function checkForRequestConfiguration (requestConfiguration) {
     return requestConfiguration
 }
 
-function addMaxContentLengthToRequestConfiguration (requestConfiguration, maxContentLength) {
+export function addMaxContentLengthToRequestConfiguration (requestConfiguration, maxContentLength) {
     checkForRequestConfiguration(requestConfiguration)
 
     if (!maxContentLength) {
@@ -20,7 +20,7 @@ function addMaxContentLengthToRequestConfiguration (requestConfiguration, maxCon
     return requestConfiguration
 }
 
-function addMaxBodyLengthToRequestConfiguration (requestConfiguration, maxBodyLength) {
+export function addMaxBodyLengthToRequestConfiguration (requestConfiguration, maxBodyLength) {
     checkForRequestConfiguration(requestConfiguration)
 
     if (!maxBodyLength) {
@@ -31,7 +31,7 @@ function addMaxBodyLengthToRequestConfiguration (requestConfiguration, maxBodyLe
     return requestConfiguration
 }
 
-function buildApiRequestConfig (url, headers, data) {
+export function buildApiRequestConfig (url, headers, data) {
     if (!url) {
         throw new Error('Url is required')
     }
@@ -46,7 +46,7 @@ function buildApiRequestConfig (url, headers, data) {
     return requestConfig
 }
 
-function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
+export function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
     if (!process.env.COMPONENT) {
         throw new Error('Component is expected in the user environment')
     }
@@ -73,7 +73,7 @@ function buildFoundationsApiRequestConfig (url, headers, data, originatingReques
     return requestConfiguration
 }
 
-function buildFoundationsApiProtectiveMonitoring (environment, successfulMonitoringOptions, exceptionMonitoringOptions) {
+export function buildFoundationsApiProtectiveMonitoring (environment, successfulMonitoringOptions, exceptionMonitoringOptions) {
     if (!environment) {
         throw new Error('Environment is required')
     }
@@ -89,7 +89,7 @@ function buildFoundationsApiProtectiveMonitoring (environment, successfulMonitor
     }
 }
 
-function buildFoundationsApiResponseOptions (protectiveMonitoring) {
+export function buildFoundationsApiResponseOptions (protectiveMonitoring) {
     if (!protectiveMonitoring) {
         throw new Error('buildFoundationsApiResponseOptions requires params')
     }
@@ -100,7 +100,7 @@ function buildFoundationsApiResponseOptions (protectiveMonitoring) {
     return responseOptions
 }
 
-function validateApiRequestConfig (requestConfiguration) {
+export function validateApiRequestConfig (requestConfiguration) {
     checkForRequestConfiguration(requestConfiguration)
 
     if (!requestConfiguration.method) {
@@ -122,7 +122,7 @@ function validateResponse (response) {
     }
 }
 
-function returnDataIfSuccessfulOrThrowError (response, successStatusCode = 200) {
+export function returnDataIfSuccessfulOrThrowError (response, successStatusCode = 200) {
     validateResponse(response)
 
     if (response.status === successStatusCode) {
@@ -131,18 +131,18 @@ function returnDataIfSuccessfulOrThrowError (response, successStatusCode = 200) 
     throwUnexpectedResponseCodeError(response, successStatusCode)
 }
 
-function throwUnexpectedResponseCodeError (response, expectedStatusCode = 200) {
+export function throwUnexpectedResponseCodeError (response, expectedStatusCode = 200) {
     // Validate response again, because this method can be called separately
     validateResponse(response)
 
     throw new Error(`Unexpected response code '${response.status}', expected '${expectedStatusCode}'`)
 }
 
-function extractCorrelationId (requestConfiguration) {
+export function extractCorrelationId (requestConfiguration) {
     return requestConfiguration.headers[httpHeadersEnum.CORRELATION_ID]
 }
 
-function extractLogMessageInfo (requestConfiguration) {
+export function extractLogMessageInfoFromRequestConfig (requestConfiguration) {
     const correlationId = extractCorrelationId(requestConfiguration)
     const httpMethod = requestConfiguration.method
     const url = requestConfiguration.url
@@ -152,25 +152,4 @@ function extractLogMessageInfo (requestConfiguration) {
         httpMethod,
         url
     }
-}
-
-export {
-    checkForRequestConfiguration,
-
-    addMaxContentLengthToRequestConfiguration,
-    addMaxBodyLengthToRequestConfiguration,
-
-    buildApiRequestConfig,
-
-    buildFoundationsApiRequestConfig,
-    buildFoundationsApiProtectiveMonitoring,
-    buildFoundationsApiResponseOptions,
-
-    validateApiRequestConfig,
-
-    returnDataIfSuccessfulOrThrowError,
-    throwUnexpectedResponseCodeError,
-
-    extractCorrelationId,
-    extractLogMessageInfo
 }

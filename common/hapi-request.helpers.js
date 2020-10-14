@@ -5,33 +5,58 @@ function validateHapiRequest (hapiRequest) {
         throw new Error('Hapi request is required')
     }
 
-    if (!hapiRequest.url) {
-        throw new Error('Hapi request url is required')
+    if (!hapiRequest.info) {
+        throw new Error('Hapi request info is required')
     }
 
-    if (!hapiRequest.url.pathname) {
-        throw new Error('Hapi request url requires a \'pathname\' property')
+    if (!hapiRequest.info.id) {
+        throw new Error('Hapi request info requires a \'id\' property')
     }
 
-    return { url: hapiRequest.url.pathname }
+    if (!hapiRequest.method) {
+        throw new Error('Hapi request method is required')
+    }
+
+    if (!hapiRequest.server) {
+        throw new Error('Hapi request server is required')
+    }
+
+    if (!hapiRequest.server.info) {
+        throw new Error('Hapi request server info is required')
+    }
+
+    if (!hapiRequest.server.info.uri) {
+        throw new Error('Hapi request server info uri is required')
+    }
+
+    if (!hapiRequest.path) {
+        // hapiRequest.path hapiRequest.url.pathname always appeared to be the same
+        throw new Error('Hapi request path is required')
+    }
+
+    return {
+        correlationId: hapiRequest.info.id,
+        httpMethod: hapiRequest.method,
+        url: `${hapiRequest.server.info.uri}${hapiRequest.path}`
+    }
 }
 
-function isHealthCheckRequest (hapiRequest) {
+export function isHealthCheckRequest (hapiRequest) {
     const { url } = validateHapiRequest(hapiRequest)
     return isHealthUrl(url)
 }
 
-function isResourceRequest (hapiRequest) {
+export function isResourceRequest (hapiRequest) {
     const { url } = validateHapiRequest(hapiRequest)
     return isResourceUrl(url)
 }
 
-function extractUrl (hapiRequest) {
-    return `${hapiRequest.server.info.uri}/${hapiRequest.path}`
-}
+export function extractLogMessageInfoFromHapiRequest (hapiRequest) {
+    const { correlationId, httpMethod, url } = validateHapiRequest(hapiRequest)
 
-export {
-    isHealthCheckRequest,
-    isResourceRequest,
-    extractUrl
+    return {
+        correlationId,
+        httpMethod,
+        url
+    }
 }
