@@ -91,9 +91,9 @@ function checkLoggedProtectiveMonitoringDetails (loggedPmMessage, environment, a
 
 function buildMockLogger () {
     return {
-        logStandardDebug: sinon.spy(),
-        logStandardInfo: sinon.spy(),
-        logStandardError: sinon.spy()
+        logRequestDebug: sinon.spy(),
+        logRequestInfo: sinon.spy(),
+        logRequestError: sinon.spy()
     }
 }
 
