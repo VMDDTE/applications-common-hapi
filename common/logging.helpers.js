@@ -2,8 +2,8 @@ import { extractLogMessageInfoFromHapiRequest, isHealthCheckRequest, isResourceR
 
 // Decide if this is better placed in logging?
 export function isTypeOfVmdLogger (vmdLogger) {
-    // We dont really care what type of logger is provided as long is it supports logStandardDebug/logStandardInfo/logStandardError
-    if (typeof vmdLogger.logStandardDebug !== 'function' || typeof vmdLogger.logStandardInfo !== 'function' || typeof vmdLogger.logStandardError !== 'function') {
+    // We dont really care what type of logger is provided as long is it supports logRequestDebug/logRequestInfo/logRequestError
+    if (typeof vmdLogger.logRequestDebug !== 'function' || typeof vmdLogger.logRequestInfo !== 'function' || typeof vmdLogger.logRequestError !== 'function') {
         throw new Error('VmdLogger does not provide required methods')
     }
 }
@@ -22,9 +22,9 @@ export function logRequestInfo (hapiRequest, vmdLogger, actionMessage, propertie
     const isResource = isResourceRequest(hapiRequest)
 
     if (isHealthCheck || isResource) {
-        vmdLogger.logStandardDebug(correlationId, httpMethod, url, actionMessage, properties)
+        vmdLogger.logRequestDebug(correlationId, httpMethod, url, actionMessage, properties)
     } else {
-        vmdLogger.logStandardInfo(correlationId, httpMethod, url, actionMessage, properties)
+        vmdLogger.logRequestInfo(correlationId, httpMethod, url, actionMessage, properties)
     }
 }
 
@@ -48,5 +48,5 @@ export function logRequestError (hapiRequest, vmdLogger, actionMessage, errorSta
         properties.errorData = errorResponse.data
     }
 
-    vmdLogger.logStandardError(correlationId, httpMethod, url, actionMessage, properties)
+    vmdLogger.logRequestError(correlationId, httpMethod, url, actionMessage, properties)
 }

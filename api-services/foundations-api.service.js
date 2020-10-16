@@ -23,9 +23,9 @@ export class FoundationsApiService extends ApiService {
     logActionRequestMessage (correlationId, httpMethod, url, actionMessage, properties) {
         // We only want to log health check endpoints as debug, this is a foundations concept
         if (isHealthUrl(url)) {
-            this.vmdLogger.logStandardDebug(correlationId, httpMethod, url, actionMessage, properties)
+            this.vmdLogger.logRequestDebug(correlationId, httpMethod, url, actionMessage, properties)
         } else {
-            this.vmdLogger.logStandardInfo(correlationId, httpMethod, url, actionMessage, properties)
+            this.vmdLogger.logRequestInfo(correlationId, httpMethod, url, actionMessage, properties)
         }
     }
 
