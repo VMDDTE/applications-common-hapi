@@ -66,8 +66,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${getDomain}${getUri}`, 'No Response', 'Error: getaddrinfo ENOTFOUND test-get.apiservice.com')
         })
     })
@@ -82,8 +82,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${getDomain}${getUri}`, 'No Response', 'Error: connect ECONNREFUSED 127.0.0.1:123')
         })
     })
@@ -117,8 +117,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${getDomain}${getUri}`, 400, 'Error: Request failed with status code 400')
         })
 
@@ -132,10 +132,10 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${getDomain}${getUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.get(requestConfiguration))
 
-            expect(mockedLogger.logStandardInfo.calledTwice).to.be.true
+            expect(mockedLogger.logRequestInfo.calledTwice).to.be.true
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'GET', `${getDomain}${getUri}`, 500, 'Error: Request failed with status code 500')
         })
     })
@@ -206,8 +206,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${postDomain}${postUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.post(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'POST', `${postDomain}${postUri}`, 400, 'Error: Request failed with status code 400')
         })
 
@@ -221,8 +221,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${postDomain}${postUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.post(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'POST', `${postDomain}${postUri}`, 500, 'Error: Request failed with status code 500')
         })
 
@@ -267,8 +267,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.put(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'PUT', `${putDomain}${putUri}`, 400, 'Error: Request failed with status code 400')
         })
 
@@ -282,8 +282,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${putDomain}${putUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.put(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'PUT', `${putDomain}${putUri}`, 500, 'Error: Request failed with status code 500')
         })
 
@@ -328,8 +328,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${patchDomain}${patchUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.patch(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'PATCH', `${patchDomain}${patchUri}`, 400, 'Error: Request failed with status code 400')
         })
 
@@ -343,8 +343,8 @@ describe('Api.Service', function () {
             const requestConfiguration = buildApiRequestConfig(`${patchDomain}${patchUri}`, { 'Content-Type': 'application/test' })
             await expectThrowsAsync(() => apiService.patch(requestConfiguration))
 
-            expect(mockedLogger.logStandardError.calledOnce).to.be.true
-            const loggedStandardErrorArguments = mockedLogger.logStandardError.firstCall.args
+            expect(mockedLogger.logRequestError.calledOnce).to.be.true
+            const loggedStandardErrorArguments = mockedLogger.logRequestError.firstCall.args
             checkLoggedErrorDetails(loggedStandardErrorArguments, 'PATCH', `${patchDomain}${patchUri}`, 500, 'Error: Request failed with status code 500')
         })
 

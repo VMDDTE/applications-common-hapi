@@ -9,7 +9,7 @@ export class ApiService {
             throw new Error('ApiService requires a VmdLogger')
         }
 
-        // We dont care what logger is provided as long is it supports logStandardInfo/logStandardError
+        // We dont care what logger is provided as long is it supports logRequestDebug/logRequestInfo/logRequestError
         if (isTypeOfVmdLogger(vmdlogger)) {
             throw new Error('VmdLogger does not provide required methods')
         }
@@ -90,7 +90,7 @@ export class ApiService {
 
     logActionRequestMessage (correlationId, httpMethod, url, actionMessage, properties) {
         // Providing an overridable method
-        this.vmdLogger.logStandardInfo(correlationId, httpMethod, url, actionMessage, properties)
+        this.vmdLogger.logRequestInfo(correlationId, httpMethod, url, actionMessage, properties)
     }
 
     processResponse (response, _responseOptions) {
@@ -112,6 +112,6 @@ export class ApiService {
             errorMessage: exception
         }
 
-        this.vmdLogger.logStandardError(correlationId, httpMethod, url, actionMessage, properties)
+        this.vmdLogger.logRequestError(correlationId, httpMethod, url, actionMessage, properties)
     }
 }
