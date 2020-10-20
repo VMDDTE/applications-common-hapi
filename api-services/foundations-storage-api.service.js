@@ -20,6 +20,7 @@ export default class FoundationsStorageApiService extends FoundationsApiService 
         const url = `${this.downloadUrl}/${id}`
         const headers = buildAuthorisationHeaders(null, downloadingUserId)
         const requestConfiguration = buildFoundationsApiRequestConfig(url, headers, null, originatingRequestId)
+        requestConfiguration.responseType = 'stream'
 
         return await this
             .get(requestConfiguration)
