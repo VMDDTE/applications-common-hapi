@@ -62,6 +62,17 @@ export class ApiService {
         return await this.actionRequest(requestConfig, responseOptions)
     }
 
+    /**
+     * Calls a `DELETE` request to an API.
+     *
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
+     */
+    async delete (requestConfig, responseOptions) {
+        requestConfig.method = 'DELETE'
+        return await this.actionRequest(requestConfig, responseOptions)
+    }
+
     async actionRequest (requestConfig, responseOptions) {
         validateApiRequestConfig(requestConfig)
 
