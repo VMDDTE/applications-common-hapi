@@ -4,11 +4,12 @@ import { permissionEnum } from './enums/permission.enum'
 import { roleEnum } from './enums/role.enum'
 import { ApiService } from './api-services/api.service'
 import { FoundationsApiService } from './api-services/foundations-api.service'
+import FoundationsStorageApiService from './api-services/foundations-storage-api.service'
 import { ProtectiveMonitoringService } from './services/protective-monitoring.service'
 import {
-    addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration, buildFoundationsApiRequestConfig,
-    buildFoundationsApiProtectiveMonitoring,
-    buildFoundationsApiResponseOptions,
+    addMaxContentLengthToRequestConfiguration, addMaxBodyLengthToRequestConfiguration,
+    buildAuthorisationHeaders, buildFoundationsApiRequestConfig,
+    buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions,
     returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError } from './api-services/helpers'
 import { buildProtectiveMonitoringOptions } from './services/helpers'
 import { isHealthCheckRequest, isResourceRequest } from './common/hapi-request.helpers'
@@ -25,14 +26,13 @@ export {
 
     ApiService,
     FoundationsApiService,
+    FoundationsStorageApiService,
 
     addMaxContentLengthToRequestConfiguration,
     addMaxBodyLengthToRequestConfiguration,
-    buildFoundationsApiRequestConfig,
-    buildFoundationsApiProtectiveMonitoring,
-    buildFoundationsApiResponseOptions,
-    returnDataIfSuccessfulOrThrowError,
-    throwUnexpectedResponseCodeError,
+    buildAuthorisationHeaders, buildFoundationsApiRequestConfig,
+    buildFoundationsApiProtectiveMonitoring, buildFoundationsApiResponseOptions,
+    returnDataIfSuccessfulOrThrowError, throwUnexpectedResponseCodeError,
 
     ProtectiveMonitoringService,
     buildProtectiveMonitoringOptions,
