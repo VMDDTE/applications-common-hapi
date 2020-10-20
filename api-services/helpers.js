@@ -1,4 +1,5 @@
 import { httpHeadersEnum } from '../enums/http-headers.enum'
+import { authorisationRequestHeaderEnum } from '../enums/authorisation-request-headers.enum'
 
 export function checkForRequestConfiguration (requestConfiguration) {
     if (!requestConfiguration) {
@@ -151,5 +152,12 @@ export function extractLogMessageInfoFromRequestConfig (requestConfiguration) {
         correlationId,
         httpMethod,
         url
+    }
+}
+
+export function buildAuthorisationHeaders (organisationId, userId) {
+    return {
+        [authorisationRequestHeaderEnum.ORGANISATION_ID]: organisationId,
+        [authorisationRequestHeaderEnum.USER_ID]: userId
     }
 }
