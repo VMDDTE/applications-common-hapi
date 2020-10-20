@@ -24,7 +24,7 @@ export class ApiService {
      * @param {Provide the request configuration} requestConfig
      * @param {Provide responseOptions if needed} responseOptions
      */
-    async get (requestConfig, responseOptions) {
+    async get (requestConfig, responseOptions = null) {
         requestConfig.method = 'GET'
         return await this.actionRequest(requestConfig, responseOptions)
     }
@@ -35,7 +35,7 @@ export class ApiService {
      * @param {Provide the request configuration} requestConfig
      * @param {Provide responseOptions if needed} responseOptions
      */
-    async post (requestConfig, responseOptions) {
+    async post (requestConfig, responseOptions = null) {
         requestConfig.method = 'POST'
         return await this.actionRequest(requestConfig, responseOptions)
     }
@@ -46,7 +46,7 @@ export class ApiService {
      * @param {Provide the request configuration} requestConfig
      * @param {Provide responseOptions if needed} responseOptions
      */
-    async put (requestConfig, responseOptions) {
+    async put (requestConfig, responseOptions = null) {
         requestConfig.method = 'PUT'
         return await this.actionRequest(requestConfig, responseOptions)
     }
@@ -57,7 +57,7 @@ export class ApiService {
      * @param {Provide the request configuration} requestConfig
      * @param {Provide responseOptions if needed} responseOptions
      */
-    async patch (requestConfig, responseOptions) {
+    async patch (requestConfig, responseOptions = null) {
         requestConfig.method = 'PATCH'
         return await this.actionRequest(requestConfig, responseOptions)
     }
@@ -68,7 +68,7 @@ export class ApiService {
      * @param {Provide the request configuration} requestConfig
      * @param {Provide responseOptions if needed} responseOptions
      */
-    async delete (requestConfig, responseOptions) {
+    async delete (requestConfig, responseOptions = null) {
         requestConfig.method = 'DELETE'
         return await this.actionRequest(requestConfig, responseOptions)
     }
