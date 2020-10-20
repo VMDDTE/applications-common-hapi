@@ -44,7 +44,7 @@ export default class FoundationsStorageApiService extends FoundationsApiService 
         const headers = buildAuthorisationHeaders(null, deletingUserId)
         const requestConfiguration = buildFoundationsApiRequestConfig(url, headers, null, originatingRequestId)
 
-        return this.delete(requestConfiguration)
+        return super.delete(requestConfiguration)
     }
 
     async ping (originatingRequestId) {
