@@ -84,8 +84,8 @@ export class ApiService {
     }
 
     logActionRequest (actionMessage, requestConfig) {
-        const { correlationId, httpMethod, url } = extractLogMessageInfoFromRequestConfig(requestConfig)
-        this.logActionRequestMessage(correlationId, httpMethod, url, actionMessage)
+        const { correlationId, httpMethod, url, loggingProperties } = extractLogMessageInfoFromRequestConfig(requestConfig)
+        this.logActionRequestMessage(correlationId, httpMethod, url, actionMessage, loggingProperties)
     }
 
     logActionRequestMessage (correlationId, httpMethod, url, actionMessage, properties) {
@@ -105,9 +105,10 @@ export class ApiService {
     }
 
     logApiServiceException (requestConfig, exception) {
-        const { correlationId, httpMethod, url } = extractLogMessageInfoFromRequestConfig(requestConfig)
+        const { correlationId, httpMethod, url, loggingProperties } = extractLogMessageInfoFromRequestConfig(requestConfig)
         const actionMessage = 'ApiService Exception'
         const properties = {
+            ...loggingProperties, // Ensure we add any additional logging properties
             errorStatusCode: exception.response ? exception.response.status || '-' : 'No Response',
             errorMessage: exception
         }

@@ -32,7 +32,7 @@ export function addMaxBodyLengthToRequestConfiguration (requestConfiguration, ma
     return requestConfiguration
 }
 
-export function buildApiRequestConfig (url, headers, data) {
+export function buildApiRequestConfig (url, headers, data, loggingProperties) {
     if (!url) {
         throw new Error('Url is required')
     }
@@ -44,15 +44,19 @@ export function buildApiRequestConfig (url, headers, data) {
     if (data) {
         requestConfig.data = data
     }
+    // Logging properties, is just a holder for additonal info
+    if (loggingProperties) {
+        requestConfig.loggingProperties = loggingProperties
+    }
     return requestConfig
 }
 
-export function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId) {
+export function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId, loggingProperties) {
     if (!process.env.COMPONENT) {
         throw new Error('Component is expected in the user environment')
     }
 
-    const requestConfiguration = buildApiRequestConfig(url, headers, data)
+    const requestConfiguration = buildApiRequestConfig(url, headers, data, loggingProperties)
 
     let requestConfigurationHeaders = requestConfiguration.headers
 
@@ -147,11 +151,13 @@ export function extractLogMessageInfoFromRequestConfig (requestConfiguration) {
     const correlationId = extractCorrelationId(requestConfiguration)
     const httpMethod = requestConfiguration.method
     const url = requestConfiguration.url
+    const loggingProperties = requestConfiguration.loggingProperties
 
     return {
         correlationId,
         httpMethod,
-        url
+        url,
+        loggingProperties
     }
 }
 
