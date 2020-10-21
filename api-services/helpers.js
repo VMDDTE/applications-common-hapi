@@ -161,9 +161,18 @@ export function extractLogMessageInfoFromRequestConfig (requestConfiguration) {
     }
 }
 
-export function buildAuthorisationHeaders (organisationId, userId) {
-    return {
-        [authorisationRequestHeaderEnum.ORGANISATION_ID]: organisationId,
+export function buildAuthorisationHeaders (userId, organisationId = null, organisationReference = null) {
+    const authHeaaders = {
         [authorisationRequestHeaderEnum.USER_ID]: userId
     }
+
+    if (organisationId) {
+        [authorisationRequestHeaderEnum.ORGANISATION_ID] = organisationId
+    }
+
+    if (organisationReference) {
+        [authorisationRequestHeaderEnum.ORGANISATION_REFERENCE] = organisationReference
+    }
+
+    return authHeaaders
 }
