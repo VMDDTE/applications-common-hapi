@@ -32,7 +32,7 @@ export function addMaxBodyLengthToRequestConfiguration (requestConfiguration, ma
     return requestConfiguration
 }
 
-export function buildApiRequestConfig (url, headers, data, loggingProperties) {
+export function buildApiRequestConfig (url, headers = null, data = null, loggingProperties = null) {
     if (!url) {
         throw new Error('Url is required')
     }
@@ -51,7 +51,7 @@ export function buildApiRequestConfig (url, headers, data, loggingProperties) {
     return requestConfig
 }
 
-export function buildFoundationsApiRequestConfig (url, headers, data, originatingRequestId, loggingProperties) {
+export function buildFoundationsApiRequestConfig (url, headers = null, data = null, originatingRequestId = null, loggingProperties = null) {
     if (!process.env.COMPONENT) {
         throw new Error('Component is expected in the user environment')
     }
