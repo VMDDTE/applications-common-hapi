@@ -162,17 +162,17 @@ export function extractLogMessageInfoFromRequestConfig (requestConfiguration) {
 }
 
 export function buildAuthorisationHeaders (userId, organisationId = null, organisationReference = null) {
-    const authHeaaders = {
+    const authHeaders = {
         [authorisationRequestHeaderEnum.USER_ID]: userId
     }
 
     if (organisationId) {
-        [authorisationRequestHeaderEnum.ORGANISATION_ID] = organisationId
+        authHeaders[authorisationRequestHeaderEnum.ORGANISATION_ID] = organisationId
     }
 
     if (organisationReference) {
-        [authorisationRequestHeaderEnum.ORGANISATION_REFERENCE] = organisationReference
+        authHeaders[authorisationRequestHeaderEnum.ORGANISATION_REFERENCE] = organisationReference
     }
 
-    return authHeaaders
+    return authHeaders
 }
