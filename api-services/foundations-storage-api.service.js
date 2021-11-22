@@ -8,7 +8,7 @@ export default class FoundationsStorageApiService extends FoundationsApiService 
 
         // Could add the /storage onto the base url as storage will only ever be /storage, however would require k8 changes
         this.baseUrl = process.env.STORAGE_SERVICE_BASE_URL
-        this.baseStorageUrl = `${this.baseUrl}/storage`
+        this.baseStorageUrl = `${this.baseUrl}/legacy`
 
         this.downloadUrl = `${this.baseStorageUrl}/download`
         this.deleteUrl = `${this.baseStorageUrl}/delete`
