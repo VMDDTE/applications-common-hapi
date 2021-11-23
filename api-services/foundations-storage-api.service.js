@@ -6,7 +6,6 @@ export default class FoundationsStorageApiService extends FoundationsApiService 
     constructor (vmdLogger, protectiveMonitoringService) {
         super(vmdLogger, protectiveMonitoringService)
 
-        // Could add the /storage onto the base url as storage will only ever be /storage, however would require k8 changes
         this.baseUrl = process.env.STORAGE_SERVICE_BASE_URL
         this.baseStorageUrl = `${this.baseUrl}/legacy`
 
