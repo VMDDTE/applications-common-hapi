@@ -73,6 +73,17 @@ export class ApiService {
         return await this.actionRequest(requestConfig, responseOptions)
     }
 
+    /**
+     * Calls a HEAD request to an API.
+     *
+     * @param {Provide the request configuration} requestConfig
+     * @param {Provide responseOptions if needed} responseOptions
+     */
+     async head (requestConfig, responseOptions = null) {
+        requestConfig.method = 'HEAD'
+        return await this.actionRequest(requestConfig, responseOptions)
+    }
+
     async actionRequest (requestConfig, responseOptions) {
         validateApiRequestConfig(requestConfig)
 
