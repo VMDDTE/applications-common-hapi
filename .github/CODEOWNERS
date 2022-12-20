@@ -1,6 +1,3 @@
 # These owners will be the default owners for everything in the repo.
 
-* @VMDDTE/applications-common-hapi-codeowner
-
-# global-github-owner to approve all updates
-/.github/ @VMDDTE/global-github-owner
+* @VMDDTE/global-github-owner @VMDDTE/applications-common-hapi-codeowner
